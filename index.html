@@ -1,0 +1,1940 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>超特急 SONG SORTER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --kai:#0044CC;--ryoga:#7A2F9A;--takuya:#00A859;--yuki:#E60012;--takashi:#FFFFFF;
+    --shuya:#383838;--masahiro:#8B4513;--aloha:#00C2C2;--haru:#FF7F00;--fan:#FF69B4;
+    --bg:#0b0b15;--bg-2:#14142a;--card:#f7f5ef;--card-ink:#1a1a28;
+    --text:#ffffff;--text-dim:#9a9ab0;--border:rgba(255,255,255,0.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.5;-webkit-font-smoothing:antialiased}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 15% 10%,rgba(255,105,180,0.10),transparent 40%),radial-gradient(circle at 85% 90%,rgba(0,194,194,0.10),transparent 45%),linear-gradient(180deg,var(--bg-2) 0%,var(--bg) 60%);z-index:-2}
+  body::after{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(90deg,transparent 0 80px,rgba(255,255,255,0.025) 80px 81px),repeating-linear-gradient(0deg,transparent 0 80px,rgba(255,255,255,0.015) 80px 81px);pointer-events:none;z-index:-1}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .member-stripe{display:flex;height:6px;width:100%}
+  .member-stripe>span{flex:1}
+  .s-kai{background:var(--kai)}.s-ryoga{background:var(--ryoga)}.s-takuya{background:var(--takuya)}.s-yuki{background:var(--yuki)}.s-takashi{background:var(--takashi)}.s-shuya{background:var(--shuya)}.s-masahiro{background:var(--masahiro)}.s-aloha{background:var(--aloha)}.s-haru{background:var(--haru)}.s-fan{background:var(--fan)}
+
+  header{padding:22px 32px 14px;display:flex;align-items:center;justify-content:space-between;gap:24px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+  .brand{display:flex;align-items:baseline;gap:14px}
+  .brand .mark{font-family:'Anton',sans-serif;font-size:32px;letter-spacing:0.04em;line-height:1;background:linear-gradient(135deg,var(--fan),var(--aloha));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .brand .ja{font-size:13px;color:var(--text-dim);font-weight:500}
+  .brand .car-no{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);background:rgba(255,255,255,0.05);padding:4px 8px;border-radius:4px;border:1px solid var(--border)}
+  .header-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .lang-toggle{display:flex;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:20px;padding:3px;gap:2px}
+  .lang-toggle button{background:transparent;border:none;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:5px 10px;border-radius:16px;cursor:pointer;letter-spacing:0.06em;transition:all 0.15s}
+  .lang-toggle button:hover{color:var(--text)}
+  .lang-toggle button.active{background:var(--fan);color:var(--card-ink)}
+  .pill{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);background:rgba(255,255,255,0.04);padding:6px 10px;border-radius:20px;border:1px solid var(--border);text-transform:uppercase;letter-spacing:0.06em}
+  .pill .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--fan);margin-right:6px;box-shadow:0 0 10px var(--fan);animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
+  main{max-width:1200px;margin:0 auto;padding:32px}
+  .view{display:none}
+  .view.active{display:block;animation:fadeIn 0.4s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  .setup-hero{text-align:center;padding:18px 0 28px}
+  .setup-hero h1{font-family:'Anton',sans-serif;font-size:clamp(48px,9vw,100px);line-height:0.9;letter-spacing:0.01em;margin-bottom:8px}
+  .setup-hero h1 .pink{color:var(--fan)}
+  .setup-hero .subtitle{font-size:13px;color:var(--text-dim);letter-spacing:0.2em;text-transform:uppercase;font-weight:500}
+  .setup-hero .ja-tag{margin-top:12px;display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--fan);border:1px solid var(--fan);padding:4px 12px;border-radius:20px}
+
+  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:16px;flex-wrap:wrap}
+  .toolbar h2{font-family:'Anton',sans-serif;font-size:24px;letter-spacing:0.04em}
+  .toolbar h2 .count{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text-dim);margin-left:10px;letter-spacing:0;font-weight:400}
+  .toolbar h2 .count .sel{color:var(--fan);font-weight:700}
+  .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+  .filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;align-items:center}
+  .filter-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;margin-right:4px;min-width:60px}
+  .filter-row{display:inline-flex;flex-wrap:wrap;gap:6px;flex:1}
+  .chip{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text-dim);font-size:12px;font-weight:500;padding:6px 12px;border-radius:20px;cursor:pointer;transition:all 0.15s;font-family:inherit;display:inline-flex;align-items:center;gap:5px}
+  .chip:hover{color:var(--text);border-color:var(--text-dim)}
+  .chip.active{background:var(--fan);color:var(--card-ink);border-color:var(--fan);font-weight:700}
+  .chip-count{font-family:'JetBrains Mono',monospace;font-size:10px;opacity:0.7}
+  .chip.mode-chip{padding:7px 13px;font-size:13px}
+
+  .custom-range{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:4px 8px;border-radius:20px}
+  .custom-range.active{background:rgba(255,105,180,0.1);border-color:var(--fan)}
+  .custom-range input{width:55px;background:transparent;border:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;text-align:center;padding:2px;border-bottom:1px solid var(--border);transition:border 0.15s}
+  .custom-range input:focus{outline:none;border-color:var(--fan)}
+  .custom-range .sep{color:var(--text-dim);font-size:11px}
+  .custom-range button{background:var(--fan);color:var(--card-ink);border:none;border-radius:14px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;font-family:inherit}
+  .custom-range button:hover{background:#ff85c1}
+
+  .quick-select{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+
+  .song-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:30px}
+  .song-card{background:var(--card);color:var(--card-ink);border-radius:8px;overflow:hidden;position:relative;display:flex;flex-direction:column;box-shadow:0 4px 14px rgba(0,0,0,0.25);transition:transform 0.15s ease,box-shadow 0.15s ease,opacity 0.15s ease;cursor:pointer}
+  .song-card.deselected{opacity:0.4}
+  .song-card.deselected .thumb{filter:grayscale(0.6)}
+  .song-card.hidden{display:none}
+  .song-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.35)}
+  .song-card .thumb{aspect-ratio:1;background:#e8e6df;position:relative;display:flex;align-items:center;justify-content:center;color:#b0aea8;overflow:hidden}
+  .song-card .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#e8e6df}
+  .song-card .thumb .ph{font-size:48px;opacity:0.4;position:relative;z-index:1}
+  .song-card .thumb img.failed{display:none}
+  .song-card .check{position:absolute;top:6px;left:6px;width:24px;height:24px;background:rgba(255,255,255,0.95);border:2px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;font-weight:900;transition:all 0.15s}
+  .song-card.selected .check{background:var(--fan);color:white;border-color:white;box-shadow:0 0 0 2px var(--fan)}
+  .song-card .actions{position:absolute;top:6px;right:6px;display:flex;gap:4px;opacity:0;transition:opacity 0.15s}
+  .song-card:hover .actions{opacity:1}
+  .song-card .icon-btn{width:24px;height:24px;background:rgba(0,0,0,0.75);color:white;border:none;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:background 0.15s}
+  .song-card .icon-btn:hover{background:var(--fan)}
+  .song-card .body{padding:10px 12px 12px;flex:1;display:flex;flex-direction:column;gap:4px}
+  .song-card .title{font-weight:700;font-size:14px;line-height:1.25;word-break:break-word}
+  .song-card .album-info{font-size:10px;color:#6a6a7a;line-height:1.35;word-break:break-word}
+  .song-card .meta{font-family:'JetBrains Mono',monospace;font-size:9px;color:#6a6a7a;text-transform:uppercase;letter-spacing:0.06em;display:flex;align-items:center;gap:6px;margin-top:auto;padding-top:4px}
+  .song-card .meta .cat-tag{padding:2px 5px;border-radius:3px;background:rgba(0,0,0,0.06);font-weight:700}
+  .song-card .meta .yr{color:var(--fan);font-weight:700}
+
+  .add-card{background:transparent;border:2px dashed rgba(255,255,255,0.15);color:var(--text-dim);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;min-height:200px;transition:all 0.2s;box-shadow:none}
+  .add-card:hover{border-color:var(--fan);color:var(--fan);background:rgba(255,105,180,0.05)}
+  .add-card .plus{font-size:32px;line-height:1;font-weight:300}
+  .add-card .label{font-size:12px;letter-spacing:0.08em;text-transform:uppercase;font-weight:700}
+
+  .tip{background:rgba(0,194,194,0.06);border-left:3px solid var(--aloha);padding:12px 16px;border-radius:4px;margin-bottom:18px;font-size:13px;color:var(--text-dim);line-height:1.6}
+  .tip strong{color:var(--aloha)}
+
+  /* Sort Mode Section */
+  .sort-mode-section{background:linear-gradient(135deg,rgba(255,105,180,0.06),rgba(0,194,194,0.04));border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin:24px 0 18px;scroll-margin-top:80px}
+  .sort-mode-section .mode-chip{min-height:36px}
+  .sort-mode-section h3{font-family:'Anton',sans-serif;font-size:18px;letter-spacing:0.05em;margin-bottom:12px;color:var(--fan)}
+  .sort-mode-section h3 .accent{color:var(--aloha);font-size:13px;margin-left:8px;font-weight:400;letter-spacing:0.1em}
+  .mode-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+  .custom-n-input{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:4px 10px;border-radius:20px;font-size:12px}
+  .custom-n-input.active{background:rgba(255,105,180,0.1);border-color:var(--fan)}
+  .custom-n-input input{width:50px;background:transparent;border:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;text-align:center;border-bottom:1px solid var(--border)}
+  .custom-n-input input:focus{outline:none;border-color:var(--fan)}
+
+  .start-area{display:flex;flex-direction:column;gap:12px;align-items:center;padding:24px 0 32px}
+  .resume-banner{background:linear-gradient(135deg,rgba(255,105,180,0.15),rgba(0,194,194,0.15));border:1px solid var(--fan);border-radius:8px;padding:16px 20px;width:100%;max-width:600px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  .resume-banner .info{flex:1}
+  .resume-banner h3{font-size:15px;color:var(--fan);margin-bottom:2px}
+  .resume-banner p{font-size:12px;color:var(--text-dim);font-family:'JetBrains Mono',monospace}
+
+  .btn{font-family:'Noto Sans JP',sans-serif;font-weight:700;border:none;cursor:pointer;padding:11px 18px;border-radius:6px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.15s ease;display:inline-flex;align-items:center;gap:8px}
+  .btn-primary{background:var(--fan);color:var(--card-ink)}
+  .btn-primary:hover{background:#ff85c1;transform:translateY(-1px);box-shadow:0 6px 18px rgba(255,105,180,0.4)}
+  .btn-primary:disabled{background:#2a2a3a;color:#555;cursor:not-allowed;transform:none;box-shadow:none}
+  .btn-secondary{background:rgba(255,255,255,0.06);color:var(--text);border:1px solid var(--border)}
+  .btn-secondary:hover{background:rgba(255,255,255,0.1);border-color:var(--text-dim)}
+  .btn-ghost{background:transparent;color:var(--text-dim);border:1px solid var(--border)}
+  .btn-ghost:hover{color:var(--text);border-color:var(--text-dim)}
+  .btn-danger{background:transparent;color:var(--yuki);border:1px solid var(--yuki)}
+  .btn-danger:hover{background:var(--yuki);color:var(--text)}
+  .btn-big{padding:18px 36px;font-size:16px}
+
+  .compare-header{text-align:center;margin-bottom:24px}
+  .compare-header .which{font-family:'Anton',sans-serif;font-size:clamp(28px,5vw,48px);letter-spacing:0.02em}
+  .compare-header .which .pink{color:var(--fan)}
+  .compare-header .sub{color:var(--text-dim);font-size:13px;letter-spacing:0.1em;text-transform:uppercase;margin-top:4px}
+  .compare-header .mode-badge{display:inline-block;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--aloha);border:1px solid var(--aloha);padding:3px 10px;border-radius:20px;letter-spacing:0.06em}
+  .progress-wrap{max-width:600px;margin:0 auto 32px}
+  .progress-info{display:flex;justify-content:space-between;margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em}
+  .progress-info .pct{color:var(--fan);font-weight:700}
+  .progress-info .mini-rank{color:var(--aloha);font-weight:700}
+  .progress-bar{height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--fan),var(--aloha));transition:width 0.4s cubic-bezier(0.4,0,0.2,1);border-radius:4px}
+  .battle{display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:stretch;max-width:1000px;margin:0 auto}
+  /* When the desktop/tablet layout is viewed on a very narrow screen, shrink gaps and
+     let the cards get compact rather than overflowing the viewport. */
+  @media (max-width:560px){
+    body:not(.is-mobile) .battle{gap:10px}
+    body:not(.is-mobile) .vs{font-size:22px}
+    body:not(.is-mobile) .battle-card .title{font-size:16px}
+    body:not(.is-mobile) .battle-card .body{padding:12px 12px 10px}
+    body:not(.is-mobile) main{padding:20px 12px}
+  }
+  .vs{display:flex;align-items:center;justify-content:center;font-family:'Anton',sans-serif;font-size:38px;color:var(--text-dim);letter-spacing:0.05em}
+  .vs .vs-text{background:var(--bg);padding:8px 4px;line-height:1}
+  .battle-card{background:var(--card);color:var(--card-ink);border-radius:12px;overflow:hidden;cursor:pointer;position:relative;display:flex;flex-direction:column;box-shadow:0 8px 28px rgba(0,0,0,0.3);transition:all 0.2s ease;border:3px solid transparent}
+  .battle-card:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(0,0,0,0.4),0 0 0 3px var(--fan);border-color:var(--fan)}
+  .battle-card .thumb{aspect-ratio:1;background:#e8e6df;display:flex;align-items:center;justify-content:center;color:#b0aea8;position:relative;overflow:hidden}
+  .battle-card .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#e8e6df}
+  .battle-card .thumb .ph{font-size:96px;opacity:0.4;position:relative;z-index:1}
+  .battle-card .thumb img.failed{display:none}
+  .battle-card .body{padding:18px 20px 14px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .battle-card .title{font-weight:900;font-size:20px;line-height:1.25;word-break:break-word}
+  .battle-card .album-info{font-size:12px;color:#5a5a6a;line-height:1.4}
+  .battle-card .album-info .tag{display:inline-block;background:rgba(0,0,0,0.08);padding:2px 6px;border-radius:3px;margin-right:4px;font-weight:700;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.05em}
+  .battle-card .yt-link{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--card-ink);text-decoration:none;background:rgba(255,105,180,0.15);padding:6px 10px;border-radius:4px;border:1px solid rgba(255,105,180,0.3);transition:all 0.15s;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;margin-top:4px}
+  .battle-card .yt-link:hover{background:var(--fan);color:white}
+  .battle-card .yt-link::before{content:'▶';font-size:9px}
+  .battle-card .choose-bar{background:var(--card-ink);color:white;padding:14px;font-family:'Anton',sans-serif;font-size:18px;letter-spacing:0.08em;text-align:center;transition:background 0.15s}
+  .battle-card:hover .choose-bar{background:var(--fan)}
+  .battle-card .key-hint{position:absolute;bottom:64px;right:12px;background:rgba(0,0,0,0.7);color:white;padding:4px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:10px;pointer-events:none}
+  .battle-card.left .accent-stripe{background:var(--aloha)}
+  .battle-card.right .accent-stripe{background:var(--fan)}
+  .battle-card .accent-stripe{height:6px;width:100%}
+  .compare-controls{display:flex;justify-content:center;gap:10px;margin-top:28px;flex-wrap:wrap}
+
+  .results-header{text-align:center;margin-bottom:32px}
+  .results-header h1{font-family:'Anton',sans-serif;font-size:clamp(40px,8vw,80px);line-height:0.95;margin-bottom:8px}
+  .results-header h1 .pink{color:var(--fan)}
+  .results-header p{color:var(--text-dim);font-size:13px;letter-spacing:0.1em;text-transform:uppercase}
+  .results-note{text-align:center;color:var(--aloha);font-size:12px;margin-bottom:18px;font-family:'JetBrains Mono',monospace;letter-spacing:0.06em}
+  .results-list{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:6px}
+  .result-row{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:10px 14px 10px 10px;display:grid;grid-template-columns:50px 56px 1fr;gap:12px;align-items:center;transition:all 0.15s}
+  .result-row:hover{background:rgba(255,255,255,0.06);border-color:var(--text-dim)}
+  .result-row.top-1{background:linear-gradient(135deg,rgba(255,105,180,0.18),rgba(255,127,0,0.08));border-color:var(--fan)}
+  .result-row.top-3{background:linear-gradient(135deg,rgba(0,194,194,0.12),transparent);border-color:var(--aloha)}
+  .result-row .rank{font-family:'Anton',sans-serif;font-size:30px;text-align:center;color:var(--text-dim);letter-spacing:0.02em}
+  .result-row.top-1 .rank{color:var(--fan);font-size:36px}
+  .result-row.top-3 .rank{color:var(--aloha)}
+  .result-row .rank-num::before{content:'#';font-size:0.6em;opacity:0.6;margin-right:2px}
+  .result-row .thumb{width:56px;height:56px;background:#2a2a3a;border-radius:4px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:24px}
+  .result-row .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:#2a2a3a}
+  .result-row .thumb img.failed{display:none}
+  .result-row .info{overflow:hidden;min-width:0}
+  .result-row .title{font-weight:700;font-size:15px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .result-row .album-info{font-size:10px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+  .result-row .meta a{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);text-decoration:none;text-transform:uppercase;letter-spacing:0.06em;transition:color 0.15s}
+  .result-row .meta a:hover{color:var(--fan)}
+  .result-row .meta a::before{content:'▶ '}
+  .results-actions{display:flex;justify-content:center;gap:10px;margin-top:32px;flex-wrap:wrap}
+
+  footer{padding:40px 32px 30px;text-align:center;border-top:1px solid var(--border);margin-top:60px}
+  footer .credit{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px}
+  footer .credit .pink{color:var(--fan)}
+  footer .author{display:inline-flex;align-items:center;gap:10px;font-size:12px;color:var(--text);text-decoration:none;border:1px solid var(--border);background:rgba(255,255,255,0.03);padding:10px 16px;border-radius:30px;transition:all 0.2s}
+  footer .author:hover{border-color:var(--fan);background:rgba(255,105,180,0.08);color:var(--fan);transform:translateY(-1px)}
+  footer .author .label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em}
+  footer .author:hover .label{color:var(--fan)}
+  footer .author .icon{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center}
+
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+  .modal-backdrop.active{display:flex}
+  .modal{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;max-width:480px;width:100%;overflow:hidden;animation:scaleIn 0.25s ease;max-height:90vh;display:flex;flex-direction:column}
+  @keyframes scaleIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+  .modal-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+  .modal-header h2{font-family:'Anton',sans-serif;font-size:22px;letter-spacing:0.04em}
+  .modal-close{background:none;border:none;color:var(--text-dim);font-size:24px;cursor:pointer;line-height:1;padding:4px}
+  .modal-close:hover{color:var(--text)}
+  .modal-body{padding:20px 22px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+  .form-row{display:flex;flex-direction:column;gap:6px}
+  .form-row label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;font-weight:700}
+  .form-row label .req{color:var(--fan)}
+  .form-row input,.form-row textarea{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:6px;font-size:14px;font-family:inherit;transition:border 0.15s}
+  .form-row input:focus,.form-row textarea:focus{outline:none;border-color:var(--fan)}
+  .form-row .hint{font-size:11px;color:var(--text-dim)}
+  .form-row .preset-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .form-row .preset-row .chip{padding:8px 12px;font-size:12px}
+  .form-row input[type='number']{font-size:18px;padding:14px 12px;font-family:'JetBrains Mono',monospace;font-weight:700;text-align:center;letter-spacing:0.04em}
+  .preview-thumb{margin-top:4px;width:80px;height:80px;background:#2a2a3a;background-size:cover;background-position:center;border-radius:6px;border:1px solid var(--border)}
+  .modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);color:var(--card-ink);padding:12px 20px;border-radius:6px;font-size:13px;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,0.3);opacity:0;transition:all 0.3s ease;pointer-events:none;z-index:200}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ===== Mobile layout — toggled by body.is-mobile (auto width OR manual override) ===== */
+  .mobile-actions{display:none}
+
+  /* Layout toggle in header */
+  .layout-mode-wrap{display:flex;align-items:center;gap:8px}
+  .layout-mode-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.08em;white-space:nowrap}
+  .layout-toggle{display:flex;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:20px;padding:3px;gap:2px}
+  .layout-toggle button{background:transparent;border:none;color:var(--text-dim);font-family:'Noto Sans JP',sans-serif;font-size:11px;font-weight:700;padding:6px 12px;border-radius:16px;cursor:pointer;letter-spacing:0.02em;transition:all 0.15s;white-space:nowrap}
+  .layout-toggle button:hover{color:var(--text)}
+  .layout-toggle button.active{background:var(--aloha);color:#001a1a}
+
+  body.is-mobile header{padding:14px 14px 10px}
+  body.is-mobile .brand{width:100%}
+  body.is-mobile .brand .mark{font-size:26px}
+  body.is-mobile .header-tools{width:100%;justify-content:space-between}
+  body.is-mobile main{padding:16px 14px}
+
+  /* Compare view — compact SIDE-BY-SIDE cards (no scrolling needed) */
+  body.is-mobile .compare-header{margin-bottom:12px}
+  body.is-mobile .compare-header .which{font-size:20px}
+  body.is-mobile .compare-header .sub{font-size:10px}
+  body.is-mobile .compare-header .mode-badge{font-size:10px;margin-top:5px}
+  body.is-mobile .progress-wrap{margin-bottom:14px}
+  body.is-mobile .battle{grid-template-columns:1fr 1fr;gap:8px}
+  body.is-mobile .vs{display:none}
+  body.is-mobile .battle-card{border-radius:10px}
+  body.is-mobile .battle-card .accent-stripe{height:4px}
+  body.is-mobile .battle-card .thumb{aspect-ratio:1}
+  body.is-mobile .battle-card .thumb .ph{font-size:44px}
+  body.is-mobile .battle-card .body{padding:9px 9px 8px;gap:4px}
+  body.is-mobile .battle-card .title{font-size:13px;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  body.is-mobile .battle-card .album-info{font-size:9px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  body.is-mobile .battle-card .album-info .tag{font-size:8px;padding:1px 4px;margin-right:3px}
+  body.is-mobile .battle-card .yt-link{padding:4px 6px;font-size:9px;margin-top:1px;gap:4px}
+  body.is-mobile .battle-card .choose-bar{padding:8px;font-size:12px}
+  body.is-mobile .battle-card .key-hint{display:none}
+  body.is-mobile .battle-card:hover{transform:none;box-shadow:0 8px 28px rgba(0,0,0,0.3);border-color:transparent}
+  body.is-mobile .battle-card:hover .choose-bar{background:var(--card-ink)}
+
+  /* Sticky bottom action bar (compare view) */
+  body.is-mobile .mobile-actions{
+    display:flex;
+    position:fixed;left:0;right:0;bottom:0;
+    background:linear-gradient(180deg,rgba(11,11,21,0.4) 0%,var(--bg-2) 35%);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    padding:12px 12px calc(12px + env(safe-area-inset-bottom));
+    gap:8px;z-index:60;border-top:1px solid var(--border);
+  }
+  body.is-mobile .mobile-actions button{
+    flex:1;padding:13px 8px;border:none;border-radius:8px;
+    font-family:'Anton',sans-serif;font-size:15px;letter-spacing:0.04em;
+    cursor:pointer;transition:transform 0.1s ease;
+    display:flex;align-items:center;justify-content:center;gap:4px;
+  }
+  body.is-mobile .mobile-actions button:active{transform:scale(0.96)}
+  body.is-mobile .mobile-actions .ma-left{background:var(--aloha);color:#001a1a}
+  body.is-mobile .mobile-actions .ma-tie{background:rgba(255,255,255,0.08);color:var(--text);border:1px solid var(--border);flex:0.7;font-size:13px}
+  body.is-mobile .mobile-actions .ma-right{background:var(--fan);color:var(--card-ink)}
+
+  body.is-mobile #compareView{padding-bottom:96px}
+  body.is-mobile #setupView{padding-bottom:210px}
+
+  /* Setup: sticky sort-mode + start button at bottom */
+  body.is-mobile .sort-mode-section{
+    position:sticky;bottom:0;
+    margin:18px -14px 0;
+    padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+    border-radius:16px 16px 0 0;
+    background:linear-gradient(180deg,rgba(11,11,21,0.5) 0%,var(--bg-2) 25%);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border:1px solid var(--border);border-bottom:none;
+    box-shadow:0 -8px 24px rgba(0,0,0,0.4);z-index:50;
+  }
+  body.is-mobile .sort-mode-section h3{font-size:13px;margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  body.is-mobile .sort-mode-section h3 .accent{display:none}
+  body.is-mobile .mode-chips{gap:5px;margin-bottom:6px}
+  body.is-mobile .mode-chip{padding:9px 10px;font-size:12px;flex:1;justify-content:center;min-width:0;min-height:38px}
+  body.is-mobile #modeHint{display:none}
+  body.is-mobile .start-area{padding:8px 0 0;gap:6px}
+  body.is-mobile .start-area #startBtn{padding:14px 28px;font-size:14px;width:100%;justify-content:center}
+  body.is-mobile #startHint{font-size:10px;text-align:center}
+  body.is-mobile .compare-controls{margin-top:14px;gap:8px}
+  body.is-mobile .compare-controls .btn{padding:9px 12px;font-size:11px}
+  body.is-mobile .compare-controls .btn-tie-desktop{display:none}
+
+  /* Catalog: compact 3-up grid */
+  body.is-mobile .song-list{grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:8px}
+  body.is-mobile .song-card .body{padding:7px 8px 9px;gap:3px}
+  body.is-mobile .song-card .title{font-size:11px;line-height:1.2}
+  body.is-mobile .song-card .album-info{font-size:8px;line-height:1.25}
+  body.is-mobile .song-card .meta{font-size:8px;padding-top:2px}
+  body.is-mobile .song-card .meta .cat-tag{padding:1px 4px}
+  body.is-mobile .song-card .check{width:24px;height:24px;font-size:14px;top:5px;left:5px}
+  body.is-mobile .song-card .thumb .ph{font-size:32px}
+  body.is-mobile .song-card:hover{transform:none;box-shadow:0 4px 14px rgba(0,0,0,0.25)}
+
+  /* Filters compact */
+  body.is-mobile .filters{gap:5px;margin-bottom:10px}
+  body.is-mobile .filter-label{min-width:auto;width:100%}
+  body.is-mobile .filter-row{width:100%}
+  body.is-mobile .chip{padding:6px 11px;font-size:11px}
+  body.is-mobile .chip-count{font-size:9px}
+
+  body.is-mobile .setup-hero{padding:8px 0 16px}
+  body.is-mobile .setup-hero h1{font-size:54px}
+
+  body.is-mobile .toolbar h2{font-size:18px}
+  body.is-mobile .toolbar-actions .btn{padding:8px 11px;font-size:10px}
+  body.is-mobile .quick-select{margin-bottom:12px}
+  body.is-mobile .quick-select .btn{padding:8px 11px;font-size:10px}
+
+  body.is-mobile .result-row{grid-template-columns:40px 44px 1fr;padding:8px 10px 8px 8px;gap:10px}
+  body.is-mobile .result-row .thumb{width:44px;height:44px}
+  body.is-mobile .result-row .rank{font-size:22px}
+  body.is-mobile .result-row.top-1 .rank{font-size:28px}
+  body.is-mobile .result-row .title{font-size:13px}
+  body.is-mobile .result-row .album-info{font-size:9px}
+  
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="mark">BULLET<br>TRAIN</span>
+    <div>
+      <div class="ja" data-i18n="brand_sub">超特急 ソング ソーター</div>
+      <span class="car-no" data-i18n="brand_car">CAR.NO 08 — FAN EDITION</span>
+    </div>
+  </div>
+  <div class="header-tools">
+    <div class="layout-mode-wrap">
+      <span class="layout-mode-label" data-i18n="layout_label">畫面模式</span>
+      <div class="layout-toggle" role="tablist" aria-label="Layout">
+        <button data-layout="auto" data-i18n="layout_auto">💻 電腦・平板</button>
+        <button data-layout="mobile" data-i18n="layout_mobile">📱 手機</button>
+      </div>
+    </div>
+    <div class="lang-toggle" role="tablist" aria-label="Language">
+      <button data-lang="zh">中文</button>
+      <button data-lang="en">EN</button>
+      <button data-lang="ja">日本語</button>
+    </div>
+    <span class="pill"><span class="dot"></span><span id="statusPill" data-i18n="status_ready">READY</span></span>
+  </div>
+</header>
+
+<div class="member-stripe" title="9 members + 8号車">
+  <span class="s-kai"></span><span class="s-ryoga"></span><span class="s-takuya"></span><span class="s-yuki"></span><span class="s-takashi"></span><span class="s-shuya"></span><span class="s-masahiro"></span><span class="s-aloha"></span><span class="s-haru"></span><span class="s-fan"></span>
+</div>
+
+<main>
+
+  <section class="view active" id="setupView">
+    <div class="setup-hero">
+      <h1><span data-i18n="hero_song">SONG</span> <span class="pink" data-i18n="hero_sorter">SORTER</span></h1>
+      <div class="subtitle" data-i18n="hero_sub">RANK YOUR FAVORITE 超特急 SONGS</div>
+      <div class="ja-tag" data-i18n="hero_tag">8号車専用 · POWERED BY 推し</div>
+    </div>
+
+    <div id="resumeArea"></div>
+
+    <div class="tip" id="tipBox"></div>
+
+    <div class="toolbar">
+      <h2><span data-i18n="toolbar_title">SONG CATALOG</span><span class="count"><span class="sel" id="selCount">0</span> / <span id="totalCount">0</span> <span data-i18n="toolbar_selected">SELECTED</span></span></h2>
+      <div class="toolbar-actions">
+        <button class="btn btn-secondary" onclick="exportSongs()" data-i18n="btn_export">EXPORT</button>
+        <button class="btn btn-secondary" onclick="importSongs()" data-i18n="btn_import">IMPORT</button>
+        <button class="btn btn-ghost" onclick="resetCatalog()" data-i18n="btn_reset">RESET CATALOG</button>
+      </div>
+    </div>
+
+    <div class="filters">
+      <span class="filter-label" data-i18n="filter_cat">CATEGORY</span>
+      <div class="filter-row" id="catFilters"></div>
+    </div>
+
+    <div class="filters">
+      <span class="filter-label" data-i18n="filter_era">ERA</span>
+      <div class="filter-row" id="eraFilters"></div>
+    </div>
+
+    <div class="quick-select">
+      <button class="btn btn-secondary" onclick="selectAll(true)" data-i18n="btn_select_all">SELECT ALL VISIBLE</button>
+      <button class="btn btn-ghost" onclick="selectAll(false)" data-i18n="btn_deselect_all">DESELECT ALL VISIBLE</button>
+      <button class="btn btn-ghost" onclick="invertSelection()" data-i18n="btn_invert">INVERT VISIBLE</button>
+    </div>
+
+    <div class="song-list" id="songList"></div>
+
+    <div class="sort-mode-section">
+      <h3><span data-i18n="mode_title">SORT MODE</span><span class="accent" data-i18n="mode_accent">CHOOSE HOW MANY TO RANK</span></h3>
+      <div class="mode-chips" id="modeChips"></div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:8px;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;" id="modeHint"></div>
+      <div class="start-area">
+        <button class="btn btn-primary btn-big" id="startBtn" onclick="startSort()" disabled>
+          <span data-i18n="btn_start">START SORT</span> →
+        </button>
+        <div style="font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;letter-spacing:0.08em;" id="startHint"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="compareView">
+    <div class="compare-header">
+      <div class="which"><span data-i18n="compare_which">WHICH DO YOU</span> <span class="pink" data-i18n="compare_prefer">PREFER?</span></div>
+      <div class="sub" data-i18n="compare_sub">CHOOSE ONE OR TIE</div>
+      <div class="mode-badge" id="modeBadge"></div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span><span id="compareCount">0</span> / <span id="compareTotal">0</span> <span data-i18n="progress_label">COMPARISONS</span></span>
+        <span class="mini-rank" id="miniRank"></span>
+        <span class="pct" id="comparePct">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="battle">
+      <div class="battle-card left" id="leftCard" onclick="cardChoose('left')">
+        <div class="accent-stripe"></div>
+        <div class="thumb" id="leftThumb"></div>
+        <div class="body">
+          <div class="title" id="leftTitle"></div>
+          <div class="album-info" id="leftAlbum"></div>
+          <a class="yt-link" id="leftYt" target="_blank" rel="noopener" onclick="event.stopPropagation()" data-i18n="listen">LISTEN ON YOUTUBE</a>
+          <span class="key-hint mono">← LEFT</span>
+        </div>
+        <div class="choose-bar" data-i18n="choose">CHOOSE</div>
+      </div>
+
+      <div class="vs"><span class="vs-text">VS</span></div>
+
+      <div class="battle-card right" id="rightCard" onclick="cardChoose('right')">
+        <div class="accent-stripe"></div>
+        <div class="thumb" id="rightThumb"></div>
+        <div class="body">
+          <div class="title" id="rightTitle"></div>
+          <div class="album-info" id="rightAlbum"></div>
+          <a class="yt-link" id="rightYt" target="_blank" rel="noopener" onclick="event.stopPropagation()" data-i18n="listen">LISTEN ON YOUTUBE</a>
+          <span class="key-hint mono">→ RIGHT</span>
+        </div>
+        <div class="choose-bar" data-i18n="choose">CHOOSE</div>
+      </div>
+    </div>
+
+    <div class="compare-controls">
+      <button class="btn btn-secondary btn-tie-desktop" onclick="choose('tie')" data-i18n="btn_tie">⟷ TIE</button>
+      <button class="btn btn-ghost" onclick="undoChoice()" id="undoBtn" data-i18n="btn_undo">↶ UNDO</button>
+      <button class="btn btn-ghost" onclick="pauseSort()" data-i18n="btn_pause">⏸ PAUSE & SAVE</button>
+      <button class="btn btn-danger" onclick="confirmCancel()" data-i18n="btn_cancel">CANCEL</button>
+    </div>
+
+    <!-- Mobile sticky action bar -->
+    <div class="mobile-actions" style="display:none;">
+      <button class="ma-left" onclick="choose('left')" data-i18n-suffix="m_left">←</button>
+      <button class="ma-tie" onclick="choose('tie')" data-i18n-suffix="m_tie">TIE</button>
+      <button class="ma-right" onclick="choose('right')" data-i18n-suffix="m_right">→</button>
+    </div>
+  </section>
+
+  <section class="view" id="resultsView">
+    <div class="results-header">
+      <h1><span data-i18n="results_your">YOUR</span> <span class="pink" data-i18n="results_ranking">RANKING</span></h1>
+      <p><span data-i18n="results_sub">COMPILED</span> <span id="resultDate"></span></p>
+    </div>
+
+    <div class="results-note" id="resultsNote"></div>
+    <div class="results-list" id="resultsList"></div>
+
+    <div class="results-actions">
+      <button class="btn btn-primary" onclick="copyResults()" data-i18n="btn_copy">📋 COPY RANKING</button>
+      <button class="btn btn-secondary" onclick="restartSort()" data-i18n="btn_again">↻ SORT AGAIN</button>
+      <button class="btn btn-ghost" onclick="backToSetup()" data-i18n="btn_back">← BACK TO CATALOG</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <a class="author" href="https://www.threads.com/@9l_boru0611" target="_blank" rel="noopener">
+    <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.78 3.631 2.695 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"/></svg></span>
+    <span>
+      <span class="label" data-i18n="contact_label">CONTACT AUTHOR · 聯絡作者</span><br>
+      <span style="font-weight:700;">@9l_boru0611</span> <span style="color:var(--text-dim);font-size:11px;">· <span data-i18n="author_name">台灣8號車露比</span></span>
+    </span>
+  </a>
+</footer>
+
+<div class="modal-backdrop" id="songModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle" data-i18n="modal_add">ADD SONG</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row"><label><span data-i18n="form_title">SONG TITLE</span> <span class="req">*</span></label><input id="fTitle" autocomplete="off" /></div>
+      <div class="form-row"><label data-i18n="form_album">ALBUM / SINGLE</label><input id="fAlbum" autocomplete="off" /></div>
+      <div class="form-row"><label data-i18n="form_youtube">YOUTUBE URL</label><input id="fYoutube" autocomplete="off" /><span class="hint" data-i18n="form_yt_hint">Leave blank to auto-generate a search link</span></div>
+      <div class="form-row"><label data-i18n="form_image">ALBUM IMAGE URL</label><input id="fImage" autocomplete="off" oninput="updatePreview()"/><span class="hint" data-i18n="form_img_hint">Leave blank to use YouTube thumbnail automatically</span><div class="preview-thumb" id="previewThumb"></div></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()" data-i18n="btn_cancel_m">CANCEL</button>
+      <button class="btn btn-primary" onclick="saveSong()" data-i18n="btn_save">SAVE</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="importModal">
+  <div class="modal">
+    <div class="modal-header"><h2 data-i18n="modal_import">IMPORT SONGS</h2><button class="modal-close" onclick="document.getElementById('importModal').classList.remove('active')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label data-i18n="form_json">JSON DATA</label><textarea id="importData" rows="8" style="font-family:'JetBrains Mono',monospace;font-size:12px;resize:vertical;"></textarea><span class="hint" data-i18n="form_import_hint">Paste previously exported JSON data</span></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="document.getElementById('importModal').classList.remove('active')" data-i18n="btn_cancel_m">CANCEL</button>
+      <button class="btn btn-primary" onclick="doImport()" data-i18n="btn_import_do">IMPORT</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Custom Year Range -->
+<div class="modal-backdrop" id="customYearModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 data-i18n="modal_custom_year">CUSTOM YEAR RANGE</h2>
+      <button class="modal-close" onclick="document.getElementById('customYearModal').classList.remove('active')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label data-i18n="form_year_from">FROM YEAR</label>
+        <input type="number" inputmode="numeric" id="customYearMinInput" min="2012" max="2030" placeholder="2012" />
+      </div>
+      <div class="form-row">
+        <label data-i18n="form_year_to">TO YEAR</label>
+        <input type="number" inputmode="numeric" id="customYearMaxInput" min="2012" max="2030" placeholder="2026" />
+      </div>
+      <div class="form-row">
+        <span class="hint" data-i18n="form_year_hint">Either field can be left blank</span>
+      </div>
+      <div class="form-row">
+        <label data-i18n="form_year_presets">PRESETS</label>
+        <div class="preset-row">
+          <button class="chip" type="button" onclick="setCustomYearPreset(2024, 2026)">2024+</button>
+          <button class="chip" type="button" onclick="setCustomYearPreset(2021, 2023)">2021-2023</button>
+          <button class="chip" type="button" onclick="setCustomYearPreset(2018, 2020)">2018-2020</button>
+          <button class="chip" type="button" onclick="setCustomYearPreset(2015, 2017)">2015-2017</button>
+          <button class="chip" type="button" onclick="setCustomYearPreset(2012, 2014)">2012-2014</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="clearCustomYearModal()" data-i18n="preset_clear">CLEAR</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('customYearModal').classList.remove('active')" data-i18n="btn_cancel_m">CANCEL</button>
+      <button class="btn btn-primary" onclick="applyCustomYearModal()" data-i18n="btn_apply">APPLY</button>
+    </div>
+  </div>
+</div>
+
+<!-- Custom confirm dialog (replaces native confirm() — unreliable in in-app browsers) -->
+<div class="modal-backdrop" id="confirmModal">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-header">
+      <h2 id="confirmTitle">CONFIRM</h2>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMessage" style="font-size:14px;line-height:1.6;color:var(--text);"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="confirmNoBtn">CANCEL</button>
+      <button class="btn btn-primary" id="confirmYesBtn">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CATALOG = [{"title":"TRAIN","album":"1st《TRAIN》","category":"實體單曲","year":"2012","youtube":"https://youtu.be/O60bRqO8dpw"},{"title":"No More Cry","album":"1st《TRAIN》","category":"實體單曲","year":"2012","youtube":"https://youtu.be/3HrrN_ti9h0"},{"title":"Shake Body","album":"2nd《Shake Body》","category":"實體單曲","year":"2012","youtube":"https://youtu.be/BelOl4Mfgf8"},{"title":"Secret Express","album":"2nd《Shake Body》","category":"實體單曲","year":"2012","youtube":"https://youtu.be/ri2WDNM3z4E"},{"title":"panipani","album":"2nd《Shake Body》","category":"實體單曲","year":"2012","youtube":"https://youtu.be/7YFQQZyCNuQ"},{"title":"POLICEMEN","album":"3rd《POLICEMEN》","category":"實體單曲","year":"2013","youtube":"https://youtu.be/MpBm76t-iA8"},{"title":"Drive on week","album":"3rd《POLICEMEN》","category":"實體單曲","year":"2013","youtube":"https://youtu.be/nOsftTlaKQQ"},{"title":"FLASHBACK","album":"3rd《POLICEMEN》","category":"實體單曲","year":"2013","youtube":"https://youtu.be/2ubhpKGRxv8"},{"title":"Bloody Night","album":"4th《Bloody Night》","category":"實體單曲","year":"2013","youtube":"https://youtu.be/H80ptRXLiPA"},{"title":"Make It Hot!","album":"4th《Bloody Night》","category":"實體單曲","year":"2013","youtube":"https://youtu.be/QinMFNLQm8U"},{"title":"Keyword","album":"4th《Bloody Night》","category":"實體單曲","year":"2013","youtube":"https://youtu.be/tgtjiFK48pg"},{"title":"Starlight","album":"限定《Starlight》(銀河超特急名義)","category":"實體單曲","year":"2013","youtube":"https://youtu.be/X02hIgMQTDE"},{"title":"Kiss Me Baby","album":"5th《Kiss Me Baby》","category":"實體單曲","year":"2013","youtube":"https://youtu.be/5LgfDsSMoew"},{"title":"No.1","album":"5th《Kiss Me Baby》","category":"實體單曲","year":"2013","youtube":"https://youtu.be/1lxZTDv8nyA"},{"title":"走れ!!!!超特急","album":"5th《Kiss Me Baby》","category":"實體單曲","year":"2013","youtube":"https://youtu.be/7z6Si2HppFE"},{"title":"Kura☆Kura","album":"5th《Kiss Me Baby》","category":"實體單曲","year":"2013","youtube":"https://youtu.be/GJguEX-V25k"},{"title":"Snow break","album":"5th《Kiss Me Baby》","category":"實體單曲","year":"2013","youtube":"https://youtu.be/hDPtljJA7TM"},{"title":"ikki!!!!!i!!","album":"6th《ikki!!!!!i!!》","category":"實體單曲","year":"2014","youtube":"https://youtu.be/m9aq-dJggMQ"},{"title":"Rush Hour","album":"6th《ikki!!!!!i!!》","category":"實體單曲","year":"2014","youtube":"https://youtu.be/gyGByRwJRrw"},{"title":"COMP!!COMP!!COMP!!","album":"6th《ikki!!!!!i!!》","category":"實體單曲","year":"2014","youtube":"https://youtu.be/AIJcQoXyfPI"},{"title":"refrain","album":"6th《ikki!!!!!i!!》","category":"實體單曲","year":"2014","youtube":"https://youtu.be/hOEjlACDG3U"},{"title":"Believe×Believe","album":"7th《Believe×Believe》","category":"實體單曲","year":"2014","youtube":"https://youtu.be/9PmFHyA0wvc"},{"title":"We Can Do It!","album":"7th《Believe×Believe》","category":"實體單曲","year":"2014","youtube":"https://youtu.be/EUSAaTQvCzQ"},{"title":"Pretty Girl","album":"7th《Believe×Believe》","category":"實體單曲","year":"2014","youtube":"https://youtu.be/-TQ9OFcOPMA"},{"title":"Star Gear","album":"8th《Star Gear》","category":"實體單曲","year":"2014","youtube":"https://youtu.be/9YT2JO8pki0"},{"title":"EBiDAY EBiNAI","album":"8th《Star Gear》","category":"實體單曲","year":"2014","youtube":"https://youtu.be/-O5mlO6V-ow"},{"title":"Burn!","album":"8th《Star Gear》","category":"實體單曲","year":"2014","youtube":"https://youtu.be/Tx_Y8A4YQW8"},{"title":"SURVIVOR","album":"1st《RING》","category":"專輯","year":"2014","youtube":"https://youtu.be/1qqu42KsiSM"},{"title":"Superstar","album":"1st《RING》","category":"專輯","year":"2014","youtube":"https://youtu.be/Zmc9ImktmYM"},{"title":"Billion Beats","album":"1st《RING》","category":"專輯","year":"2014","youtube":"https://youtu.be/SUQ9agAI4G4"},{"title":"What's going on ?","album":"1st《RING》","category":"專輯","year":"2014","youtube":"https://youtu.be/Y-XvXaxQQr8"},{"title":"Time Wave","album":"1st《RING》","category":"專輯","year":"2014","youtube":"https://youtu.be/XTncTNssML4"},{"title":"Gravitation","album":"1st《RING》","category":"專輯","year":"2014","youtube":"https://youtu.be/KbQ-NcbgUq8"},{"title":"Bye Bye Bye","album":"1st《RING》","category":"專輯","year":"2014","youtube":"https://youtu.be/v4Bz-vqRum4"},{"title":"STYLE","album":"1st《RING》","category":"專輯","year":"2014","youtube":"https://youtu.be/e0VmV9Wi06s"},{"title":"Signal","album":"1st《RING》","category":"專輯","year":"2014","youtube":"https://youtu.be/qlR0qgkYQw4"},{"title":"One Life","album":"1st《RING》","category":"專輯","year":"2014","youtube":"https://youtu.be/raGDct_vf4Q"},{"title":"No More Cry [3rd Anniversary Special!!!!!!!!ver.]","album":"No More Cry [3rd Anniversary Special!!!!!!!!ver.]","category":"數位單曲","year":"2015","youtube":"https://youtu.be/fQ4_eqLZV7s"},{"title":"スターダスト LOVE TRAIN","album":"9th《スターダスト LOVE TRAIN / バッタマン》","category":"實體單曲","year":"2015","youtube":"https://youtu.be/HmTW-E_I_lc"},{"title":"バッタマン","album":"9th《スターダスト LOVE TRAIN / バッタマン》","category":"實體單曲","year":"2015","youtube":"https://youtu.be/ewt-tUxpxQc"},{"title":"3.Summer love","album":"9th《スターダスト LOVE TRAIN / バッタマン》","category":"實體單曲","year":"2015","youtube":"https://youtu.be/YFq3K2koa-c"},{"title":"1.Beautiful Chaser","album":"10th《Beautiful Chaser》","category":"實體單曲","year":"2015","youtube":"https://youtu.be/GVxMA5aMRCE"},{"title":"HOPE STEP JUMP","album":"10th《Beautiful Chaser》","category":"實體單曲","year":"2015","youtube":"https://youtu.be/CPuu5B-_GoI"},{"title":"fanfare","album":"10th《Beautiful Chaser》","category":"實體單曲","year":"2015","youtube":"https://youtu.be/JAVppSC5tJo"},{"title":"Love again","album":"#globe20th -SPECIAL COVER BEST-","category":"參與作品","year":"2015","youtube":"https://youtu.be/BirajqF4dj0"},{"title":"Yell","album":"11th《Yell》","category":"實體單曲","year":"2016","youtube":"https://youtu.be/v9tri3sq54E"},{"title":"OVER DRIVE","album":"11th《Yell》","category":"實體單曲","year":"2016","youtube":"https://youtu.be/aGLcyklijNA"},{"title":"Turn Up","album":"11th《Yell》","category":"實體單曲","year":"2016","youtube":"https://youtu.be/2WIdfXmMQ14"},{"title":"Synchronism","album":"11th《Yell》","category":"實體單曲","year":"2016","youtube":"https://youtu.be/XXziE_pKsD8"},{"title":"Seventh Heaven","album":"2nd《Dramatic Seven》","category":"專輯","year":"2016","youtube":"https://youtu.be/1CfJKqoV0d4"},{"title":"バッタマン(Lunatic ver.)","album":"2nd《Dramatic Seven》","category":"專輯","year":"2016","youtube":"https://youtu.be/aZe2V8ePxiM"},{"title":"超えてアバンチュール","album":"2nd《Dramatic Seven》","category":"專輯","year":"2016","youtube":"https://youtu.be/BvttdfzOclU"},{"title":"LIBIDO","album":"2nd《Dramatic Seven》","category":"專輯","year":"2016","youtube":"https://youtu.be/YCf1xgiq59A"},{"title":"Beasty Spider","album":"2nd《Dramatic Seven》","category":"專輯","year":"2016","youtube":"https://youtu.be/LWQNTzeNolI"},{"title":"Whiteout","album":"2nd《Dramatic Seven》","category":"專輯","year":"2016","youtube":"https://youtu.be/tWP4MyaP0IM"},{"title":"Peace of LOVE","album":"2nd《Dramatic Seven》","category":"專輯","year":"2016","youtube":"https://youtu.be/YPfiaU8Peyw"},{"title":"ライオンライフ","album":"2nd《Dramatic Seven》","category":"專輯","year":"2016","youtube":"https://youtu.be/hvMab7p4FD0"},{"title":"Clap Our Hands!","album":"2nd《Dramatic Seven》","category":"專輯","year":"2016","youtube":"https://youtu.be/08m6l1YbNDM"},{"title":"Always You","album":"2nd《Dramatic Seven》","category":"專輯","year":"2016","youtube":"https://youtu.be/vIYrfygxPKs"},{"title":"超ネバギバDANCE","album":"12th《超ネバギバDANCE》","category":"實體單曲","year":"2017","youtube":"https://youtu.be/zgzEHYf0l70"},{"title":"gr8est journey","album":"12th《超ネバギバDANCE》","category":"實體單曲","year":"2017","youtube":"https://youtu.be/Px-xuySg0dI"},{"title":"PAPAPAPA JUMPERS","album":"12th《超ネバギバDANCE》","category":"實體單曲","year":"2017","youtube":"https://youtu.be/fJOsXumr1VM"},{"title":"My Buddy","album":"13th《My Buddy》","category":"實體單曲","year":"2017","youtube":"https://youtu.be/u7ZtG_btP1k"},{"title":"浮つきWAVES","album":"13th《My Buddy》","category":"實體單曲","year":"2017","youtube":"https://youtu.be/hs5R8OGMgRM"},{"title":"UNKNOWN...","album":"13th《My Buddy》","category":"實體單曲","year":"2017","youtube":"https://youtu.be/PcXHKw0EdDM"},{"title":"a kind of love","album":"14th《a kind of love》","category":"實體單曲","year":"2018","youtube":"https://youtu.be/laU7swTQcRI"},{"title":"Party Maker","album":"14th《a kind of love》","category":"實體單曲","year":"2018","youtube":"https://youtu.be/PDUcJbhBGZw"},{"title":"Feel the light","album":"14th《a kind of love》","category":"實體單曲","year":"2018","youtube":"https://youtu.be/1QdKOjrWyqQ"},{"title":"Jesus","album":"15th《Jesus》","category":"實體單曲","year":"2018","youtube":"https://youtu.be/3eNIGlEPw3w"},{"title":"up to you","album":"15th《Jesus》","category":"實體單曲","year":"2018","youtube":"https://youtu.be/2pwTtjCY-c4"},{"title":"Fashion","album":"15th《Jesus》","category":"實體單曲","year":"2018","youtube":"https://youtu.be/kKcMRU8fLEw"},{"title":"need you","album":"3rd《GOLDEN EPOCH》","category":"專輯","year":"2018","youtube":"https://youtu.be/x1fEtyBht-U"},{"title":"Booster","album":"3rd《GOLDEN EPOCH》","category":"專輯","year":"2018","youtube":"https://youtu.be/rCh-D0keVEk"},{"title":"ขอเสียงหน่อย","album":"3rd《GOLDEN EPOCH》","category":"專輯","year":"2018","youtube":"https://youtu.be/MIpPVHugkjo"},{"title":"霖雨","album":"3rd《GOLDEN EPOCH》","category":"專輯","year":"2018","youtube":"https://youtu.be/8XhvH4NDaWQ"},{"title":"Full moon","album":"3rd《GOLDEN EPOCH》","category":"專輯","year":"2018","youtube":"https://youtu.be/TnILSCpUjhU"},{"title":"PUMP ME UP","album":"3rd《GOLDEN EPOCH》","category":"專輯","year":"2018","youtube":"https://youtu.be/0Xo0XosQTsE"},{"title":"You know I know","album":"3rd《GOLDEN EPOCH》","category":"專輯","year":"2018","youtube":"https://youtu.be/-qJk3t7mb_w"},{"title":"8號車との歌","album":"3rd《GOLDEN EPOCH》","category":"專輯","year":"2018","youtube":"https://youtu.be/7zGMixPaZ38"},{"title":"Time of GOLD","album":"3rd《GOLDEN EPOCH》","category":"專輯","year":"2018","youtube":"https://youtu.be/GGwu1Sk5gqU"},{"title":"ソレイユ","album":"ソレイユ","category":"數位單曲","year":"2019","youtube":"https://youtu.be/4sO0A18qQRI"},{"title":"Hey Hey Hey","album":"16th《Hey Hey Hey》","category":"實體單曲","year":"2019","youtube":"https://youtu.be/8JWXDNHwPEA"},{"title":"Drawイッパツ！","album":"16th《Hey Hey Hey》","category":"實體單曲","year":"2019","youtube":"https://youtu.be/r07eZgxN2fE"},{"title":"TAXI","album":"16th《Hey Hey Hey》","category":"實體單曲","year":"2019","youtube":"https://youtu.be/MsKiz5g5qLs"},{"title":"Before Dawn","album":"16th《Hey Hey Hey》","category":"實體單曲","year":"2019","youtube":"https://youtu.be/kiHz_7gc5Dw"},{"title":"激おこスティックファイナリアリティぷんぷんドリームわ~るど","album":"16th《Hey Hey Hey》","category":"實體單曲","year":"2019","youtube":"https://youtu.be/dpnZoAQ2mLw"},{"title":"Four Seasons","album":"16th《Hey Hey Hey》","category":"實體單曲","year":"2019","youtube":"https://youtu.be/YVhfHNmXRaw"},{"title":"Play Back","album":"16th《Hey Hey Hey》","category":"實體單曲","year":"2019","youtube":"https://youtu.be/qo3kudrQSpE"},{"title":"小さな光","album":"16th《Hey Hey Hey》","category":"實體單曲","year":"2019","youtube":"https://youtu.be/_vxC0V8BYe4"},{"title":"SAY NO","album":"SAY NO","category":"數位單曲","year":"2019","youtube":"https://youtu.be/9riFWf5YTA0"},{"title":"Revival Love","album":"17th《Revival Love》","category":"實體單曲","year":"2019","youtube":"https://youtu.be/7QW0rAScy24"},{"title":"Don’t Stop 戀","album":"17th《Revival Love》","category":"實體單曲","year":"2019","youtube":"https://youtu.be/h2Yo180XceU"},{"title":"Body Rock","album":"17th《Revival Love》","category":"實體單曲","year":"2019","youtube":"https://youtu.be/mxYwqljbitE"},{"title":"サヨナラは雪のあとで","album":"《サヨナラは雪のあとで》","category":"BD單曲","year":"2019","youtube":"https://youtu.be/nokkUzuoeVs"},{"title":"超越マイウェイ","album":"超越マイウェイ","category":"數位單曲","year":"2020","youtube":"https://youtu.be/58qUkjZGr6M"},{"title":"SAIKOU KOUSHIN","album":"SAIKOU KOUSHIN","category":"數位單曲","year":"2020","youtube":"https://youtu.be/M16g7B2pNH4"},{"title":"Stand up","album":"18th《Stand Up!》","category":"實體單曲","year":"2020","youtube":"https://youtu.be/uIyM1Ix1mWE"},{"title":"いいね","album":"18th《Stand Up!》","category":"實體單曲","year":"2020","youtube":"https://youtu.be/YnoLHCpuil8"},{"title":"Table Manners","album":"18th《Stand Up!》","category":"實體單曲","year":"2020","youtube":"https://youtu.be/5ri0UxJsiPU"},{"title":"Dear My グッバイ","album":"Dear My グッバイ","category":"數位單曲","year":"2020","youtube":"https://youtu.be/aiWmcotcyzI"},{"title":"Jasper","album":"Jasper","category":"數位單曲","year":"2020","youtube":"https://youtu.be/y_xgw9wYfDE"},{"title":"Never Mine","album":"Never Mine","category":"數位單曲","year":"2020","youtube":"https://youtu.be/T5zRJzA3xto"},{"title":"凱歌","album":"凱歌","category":"數位單曲","year":"2020","youtube":"https://youtu.be/9tm3UGYW0yc"},{"title":"So Crazy","album":"So Crazy","category":"數位單曲","year":"2020","youtube":"https://youtu.be/W53modCAuQo"},{"title":"My Answer","album":"My Answer","category":"數位單曲","year":"2020","youtube":"https://youtu.be/G1YnVXX2dZ0"},{"title":"Asayake","album":"19th《Asayake》","category":"實體單曲","year":"2020","youtube":"https://youtu.be/tMb0BCgTSC4"},{"title":"Fantasista","album":"19th《Asayake》","category":"實體單曲","year":"2020","youtube":"https://youtu.be/IXO6geQXOM0"},{"title":"キズナアルゴリズム","album":"19th《Asayake》","category":"實體單曲","year":"2020","youtube":"https://youtu.be/UbrAohD34r4"},{"title":"What’s up!?","album":"19th《Asayake》","category":"實體單曲","year":"2020","youtube":"https://youtu.be/A-Xje_e4Mog"},{"title":"Guilty","album":"Guilty","category":"數位單曲","year":"2021","youtube":"https://youtu.be/FPbIqqsC2Aw"},{"title":"CARNAVAL","album":"CARNAVAL","category":"數位單曲","year":"2021","youtube":"https://youtu.be/hu8ys5Aj0m0"},{"title":"같이 가자","album":"같이 가자","category":"數位單曲","year":"2021","youtube":"https://youtu.be/eb74qprNqJ0"},{"title":"Добрый день","album":"Добрый день","category":"數位單曲","year":"2021","youtube":"https://youtu.be/z-pCRPEtRrs"},{"title":"Yodelic Fire","album":"4th《Dance Dance Dance》","category":"專輯","year":"2021","youtube":"https://youtu.be/f609WH3qFzY"},{"title":"Sonrisa","album":"4th《Dance Dance Dance》","category":"專輯","year":"2021","youtube":"https://youtu.be/-VYs-2bJCJc"},{"title":"榮光","album":"4th《Dance Dance Dance》","category":"專輯","year":"2021","youtube":"https://youtu.be/xvVlRDZzXrw"},{"title":"Magnifique","album":"4th《Dance Dance Dance》","category":"專輯","year":"2021","youtube":"https://youtu.be/BDMRItmP0sc"},{"title":"Chill out @JP","album":"4th《Dance Dance Dance》","category":"專輯","year":"2021","youtube":"https://youtu.be/EVrzJkP2oKg"},{"title":"Cead Mile Failte","album":"4th《Dance Dance Dance》","category":"專輯","year":"2021","youtube":"https://youtu.be/g6bAymo8IdY"},{"title":"大大地地","album":"4th《Dance Dance Dance》","category":"專輯","year":"2021","youtube":"https://youtu.be/tPpq7Bp1dzM"},{"title":"Holtasoley","album":"4th《Dance Dance Dance》","category":"專輯","year":"2021","youtube":"https://youtu.be/N2x1GwHU5A8"},{"title":"Dance Dance Dancing！","album":"4th《Dance Dance Dance》","category":"專輯","year":"2021","youtube":"https://youtu.be/OvGNW3y0S0s"},{"title":"Te quiero mucho","album":"4th《Dance Dance Dance》","category":"專輯","year":"2021","youtube":"https://youtu.be/Qbz3gJpFdlk"},{"title":"You Don’t Care","album":"4th《Dance Dance Dance》","category":"專輯","year":"2021","youtube":"https://youtu.be/tMnqqMllkg0"},{"title":"クレッシェンド","album":"クレッシェンド","category":"數位單曲","year":"2022","youtube":"https://youtu.be/nXp60oaL-zw"},{"title":"ウサギミック","album":"ウサギミック","category":"數位單曲","year":"2022","youtube":"https://youtu.be/NbiGAjMotsg"},{"title":"宇宙ドライブ","album":"20th《宇宙ドライブ》","category":"實體單曲","year":"2022","youtube":"https://youtu.be/LWAFpcLrHis"},{"title":"BakaBakka","album":"20th《宇宙ドライブ》","category":"實體單曲","year":"2022","youtube":"https://youtu.be/os9LtDhdIAo"},{"title":"きみとシンギュラリティ","album":"20th《宇宙ドライブ》","category":"實體單曲","year":"2022","youtube":"https://youtu.be/3eZI3KNohzc"},{"title":"Re-TRAIN","album":"20th《宇宙ドライブ》","category":"實體單曲","year":"2022","youtube":"https://youtu.be/SiObsGLx5Oc"},{"title":"NEW WORLD","album":"NEW WORLD","category":"數位單曲","year":"2022","youtube":"https://youtu.be/RLYHjWQsqxk"},{"title":"MORA MORA","album":"5th《B9》","category":"專輯","year":"2023","youtube":"https://youtu.be/n5akiTYEi8g"},{"title":"KNOCK U DOWN","album":"5th《B9》","category":"專輯","year":"2023","youtube":"https://youtu.be/GwhySD85HPI"},{"title":"Thinking of You","album":"5th《B9》","category":"專輯","year":"2023","youtube":"https://youtu.be/xgO_FYNnjoY"},{"title":"シャンディ","album":"5th《B9》","category":"專輯","year":"2023","youtube":"https://youtu.be/4pc_SWIWLww"},{"title":"Winning Run","album":"5th《B9》","category":"專輯","year":"2023","youtube":"https://youtu.be/wAkGyaSBHpM"},{"title":"ラキラキ","album":"5th《B9》","category":"專輯","year":"2023","youtube":"https://youtu.be/CpiZviEERuQ"},{"title":"Typhoon","album":"5th《B9》","category":"專輯","year":"2023","youtube":"https://youtu.be/Ia1llgnUFVE"},{"title":"Together As One","album":"5th《B9》","category":"專輯","year":"2023","youtube":"https://youtu.be/9Bp6ZssI1u0"},{"title":"君と、奏で","album":"5th《B9》","category":"專輯","year":"2023","youtube":"https://youtu.be/hkSzeQkCHsA"},{"title":"Call My Name","album":"Call My Name","category":"數位單曲","year":"2023","youtube":"https://youtu.be/pYGcxhArwL4"},{"title":"Lesson II","album":"Lesson II","category":"數位單曲","year":"2023","youtube":"https://youtu.be/cj4xzX10htY"},{"title":"Steal a Kiss","album":"1st《Just like 超特急》","category":"迷你專輯","year":"2024","youtube":"https://youtu.be/1maL_bJe5u8"},{"title":"MEMORIAる","album":"1st《Just like 超特急》","category":"迷你專輯","year":"2024","youtube":"https://youtu.be/unhu4ekXNwY"},{"title":"Love Song","album":"1st《Just like 超特急》","category":"迷你專輯","year":"2024","youtube":"https://youtu.be/SkriE1Aw4i4"},{"title":"ジュブナイラー","album":"1st《Just like 超特急》","category":"迷你專輯","year":"2024","youtube":"https://youtu.be/KFevLleMZW4"},{"title":"Spice","album":"1st《Just like 超特急》","category":"迷你專輯","year":"2024","youtube":"https://youtu.be/XvubXnv0xaQ"},{"title":"星屑のダンスフロア","album":"1st《Just like 超特急》","category":"迷你專輯","year":"2024","youtube":"https://youtu.be/isLIPGnfgs0"},{"title":"Countdown","album":"1st《Just like 超特急》","category":"迷你專輯","year":"2024","youtube":"https://youtu.be/MtLEh6H6lwA"},{"title":"MEMORIAる×走れ!!!!超特急 [Mashup]","album":"MEMORIAる×走れ!!!!超特急 [Mashup]","category":"數位單曲","year":"2024","youtube":"https://youtu.be/4UzIC8ixWEM"},{"title":"BakaBakka [Re-mix]","album":"BakaBakka [Re-mix]","category":"數位單曲","year":"2024","youtube":"https://youtu.be/I3QJs-167pM"},{"title":"Steal a Kiss × Kiss Me Baby [Mashup]","album":"Steal a Kiss × Kiss Me Baby [Mashup]","category":"數位單曲","year":"2024","youtube":"https://youtu.be/_aQf3WmblHo"},{"title":"panipani [Re-mix]","album":"panipani [Re-mix]","category":"數位單曲","year":"2024","youtube":"https://youtu.be/CK1FWCphO4s"},{"title":"AwA AwA","album":"21st《AwA AwA》","category":"實體單曲","year":"2024","youtube":"https://youtu.be/AP1QYUzulkY"},{"title":"クリスマス・イブ","album":"21st《AwA AwA》","category":"實體單曲","year":"2024","youtube":"https://youtu.be/2DiGvWJW8kU"},{"title":"JOKER FACE","album":"21st《AwA AwA》","category":"實體單曲","year":"2024","youtube":"https://youtu.be/S-UqpTfjJ2I"},{"title":"踴ライナー","album":"2nd《Why don’t you 超特急?》","category":"迷你專輯","year":"2025","youtube":"https://youtu.be/cjAz9zTUpJ4"},{"title":"キャラメルハート","album":"2nd《Why don’t you 超特急?》","category":"迷你專輯","year":"2025","youtube":"https://youtu.be/Qn64gXn46Iw"},{"title":"メタルなかよし","album":"2nd《Why don’t you 超特急?》","category":"迷你專輯","year":"2025","youtube":"https://youtu.be/5-oTVGdslf0"},{"title":"Velvet Venom","album":"2nd《Why don’t you 超特急?》","category":"迷你專輯","year":"2025","youtube":"https://youtu.be/CVWmKAPiDf0"},{"title":"Big Ta-Da!","album":"2nd《Why don’t you 超特急?》","category":"迷你專輯","year":"2025","youtube":"https://youtu.be/X2zu8mT04iw"},{"title":"Ready？","album":"2nd《Why don’t you 超特急?》","category":"迷你專輯","year":"2025","youtube":"https://youtu.be/-O2u-C8z3DY"},{"title":"EVE","album":"EVE","category":"數位單曲","year":"2025","youtube":"https://youtu.be/LeM1FyvXWmY"},{"title":"NINE LIVES","album":"22nd《NINE LIVES》","category":"實體單曲","year":"2025","youtube":"https://youtu.be/EtGVe9gU988"},{"title":"ウインクキラー","album":"22nd《NINE LIVES》","category":"實體單曲","year":"2025","youtube":"https://youtu.be/T9aqK5uGCc4"},{"title":"スピカ","album":"22nd《NINE LIVES》","category":"實體單曲","year":"2025","youtube":"https://youtu.be/fog4TW1Bw7w"},{"title":"REAL","album":"REAL","category":"數位單曲","year":"2025","youtube":"https://youtu.be/4oml768wFnk"},{"title":"POKER FACE","album":"POKER FACE","category":"數位單曲","year":"2026","youtube":"https://youtu.be/00b8Sd6J3SM"},{"title":"ガチ夢中！","album":"《ガチ夢中!》","category":"實體單曲","year":"2026","youtube":"https://youtu.be/0beWrfj7AvE"},{"title":"C'est la vie","album":"《ガチ夢中!》","category":"實體單曲","year":"2026","youtube":"https://youtu.be/w8ltcHURKhc"},{"title":"STEP BY STEP","album":"《ガチ夢中!》","category":"實體單曲","year":"2026","youtube":"https://youtu.be/SBbAC8kyc9E"}];
+
+// ============ I18N ============
+const TR = {
+  zh: {
+    brand_sub:'超特急 歌曲排序器',brand_car:'CAR.NO 08 — 粉絲限定版',
+    m_left:'← 喜歡左邊',m_tie:'平手',m_right:'喜歡右邊 →',
+    layout_label:'畫面模式',layout_auto:'💻 電腦・平板',layout_mobile:'📱 手機',
+    confirm_title:'請確認',confirm_yes:'確定',confirm_no:'取消',confirm_missing:'有些已儲存的歌曲找不到了，仍要繼續嗎？',
+    era_custom_btn:'📅 自訂年代',era_apply:'套用',modal_custom_year:'自訂年代範圍',
+    form_year_from:'起始年份',form_year_to:'結束年份',form_year_hint:'兩者皆可留空（會自動展開到最早/最晚年份）',
+    form_year_presets:'快速選擇',preset_clear:'清除',btn_apply:'套用',
+    status_ready:'準備中',status_sorting:'排序中',status_complete:'完成',
+    hero_song:'SONG',hero_sorter:'SORTER',hero_sub:'為你心中的超特急歌曲排出順序',hero_tag:'8號車專用 · 由「推し」驅動',
+    tip:'<strong>使用說明</strong>　171 首歌曲已預載。<strong>點擊類別或年代</strong>可同時篩選+自動選擇該範圍；用下方<strong>排序模式</strong>選擇要排出完整排名或只測前幾名（次數會大幅減少）。進度自動儲存。',
+    toolbar_title:'歌曲目錄',toolbar_selected:'已選',
+    filter_cat:'類別',filter_era:'年代',
+    btn_export:'匯出',btn_import:'匯入',btn_reset:'重設目錄',
+    btn_select_all:'全選顯示中',btn_deselect_all:'取消顯示中',btn_invert:'反選顯示中',
+    btn_start:'開始排序',
+    hint_min:'至少選擇 2 首歌曲',
+    hint_estimate:(n,c,mode,k)=>mode==='full'?`完整排行 · ${n} 首 · 約 ${c} 次比較`:`前 ${Math.min(k,n)} 名 · ${n} 首中 · 約 ${c} 次比較`,
+    cat_all:'全部',cat_實體單曲:'實體單曲',cat_數位單曲:'數位單曲',cat_專輯:'專輯',cat_迷你專輯:'迷你專輯',cat_BD單曲:'BD單曲',cat_參與作品:'參與作品',
+    era_all:'全部',era_custom:'自訂年代',era_apply:'套用',
+    mode_title:'排序模式',mode_accent:'選擇要排幾名',
+    mode_full:n=>`完整排行 (${n})`,mode_top:n=>`前 ${n} 名`,mode_custom:'自訂',mode_custom_n:'前 N 名：',
+    mode_hint_full:'完整排出全部歌曲順序（比較次數最多）',
+    mode_hint_top:n=>`只找出前 ${n} 名歌曲（比較次數較少，速度快）`,
+    compare_which:'你比較喜歡哪一首',compare_prefer:'？',compare_sub:'選一首，或選平手',
+    progress_label:'次比較',mini_rank:n=>`已找出第 ${n} 名`,
+    listen:'YouTube 收聽',choose:'選這首',
+    btn_tie:'⟷ 平手',btn_undo:'↶ 復原',btn_pause:'⏸ 暫停儲存',btn_cancel:'取消',
+    results_your:'你的',results_ranking:'排行榜',results_sub:'完成於',
+    results_note_top:(k,n)=>`前 ${k} 名 · 來自 ${n} 首選定歌曲`,
+    results_note_full:n=>`完整 ${n} 首排行`,
+    btn_copy:'📋 複製排行榜',btn_again:'↻ 再排一次',btn_back:'← 返回目錄',
+    modal_add:'新增歌曲',modal_edit:'編輯歌曲',
+    form_title:'歌曲名稱',form_album:'收錄專輯／單曲',form_youtube:'YouTube 連結',form_yt_hint:'留空會自動產生搜尋連結',
+    form_image:'專輯封面網址',form_img_hint:'留空會自動使用 YouTube 縮圖',
+    modal_import:'匯入歌曲',form_json:'JSON 資料',form_import_hint:'貼上之前匯出的 JSON 資料',
+    btn_cancel_m:'取消',btn_save:'儲存',btn_import_do:'匯入',
+    footer_credit:'為了',contact_label:'聯絡作者 · CONTACT',author_name:'台灣8號車露比',
+    resume_h3:'▶ 排序進行中',resume_p:(d,t,p,m)=>`${m} · ${d} / ${t} 次比較 · ${p}% 完成`,
+    btn_resume:'繼續 →',btn_discard:'捨棄',
+    badge_full:'完整排行',badge_top:k=>`前 ${k} 名模式`,
+    msg_saved:'進度已保存',msg_added:'已新增',msg_updated:'已更新',msg_cleared:'已清空',
+    msg_required:'請填寫歌曲名稱',msg_copied:'已複製到剪貼簿',
+    msg_imported:n=>`已匯入 ${n} 首歌曲`,msg_invalid:'無效的 JSON',msg_nothing:'沒有資料',
+    msg_reset:'已重設為完整目錄',msg_discard:'已捨棄進度',msg_year_invalid:'請輸入有效年份',
+    confirm_delete:t=>`刪除「${t}」？`,confirm_reset:'重設為原始的 171 首歌曲目錄？目前的自訂變更會遺失。',
+    confirm_cancel:'取消並丟棄目前進度？',confirm_replace:(n,m)=>`用 ${m} 首匯入的歌曲取代目前的 ${n} 首？`,
+    confirm_again:'使用相同清單再排一次？',confirm_discard:'捨棄已保存的進度？',
+    rank_header_top:k=>`🚄 超特急 歌曲排行榜 · 我的 TOP ${k}`,
+    rank_header_full:'🚄 超特急 歌曲排行榜 · 我的完整排名',
+  },
+  en: {
+    brand_sub:'超特急 Song Sorter',brand_car:'CAR.NO 08 — FAN EDITION',
+    m_left:'← LEFT',m_tie:'TIE',m_right:'RIGHT →',
+    layout_label:'VIEW MODE',layout_auto:'💻 DESKTOP/TABLET',layout_mobile:'📱 PHONE',
+    confirm_title:'CONFIRM',confirm_yes:'OK',confirm_no:'CANCEL',confirm_missing:'Some saved songs are missing. Resume anyway?',
+    era_custom_btn:'📅 CUSTOM',era_apply:'APPLY',modal_custom_year:'CUSTOM YEAR RANGE',
+    form_year_from:'FROM YEAR',form_year_to:'TO YEAR',form_year_hint:'Either field can be left blank',
+    form_year_presets:'PRESETS',preset_clear:'CLEAR',btn_apply:'APPLY',
+    status_ready:'READY',status_sorting:'SORTING',status_complete:'COMPLETE',
+    hero_song:'SONG',hero_sorter:'SORTER',hero_sub:'RANK YOUR FAVORITE 超特急 SONGS',hero_tag:'8号車専用 · POWERED BY 推し',
+    tip:'<strong>How it works</strong>　171 songs pre-loaded. <strong>Tap a category or era</strong> to filter AND auto-select that range. Use <strong>SORT MODE</strong> below to choose between full ranking or top-N (much fewer comparisons). Progress is auto-saved.',
+    toolbar_title:'SONG CATALOG',toolbar_selected:'SELECTED',
+    filter_cat:'CATEGORY',filter_era:'ERA',
+    btn_export:'EXPORT',btn_import:'IMPORT',btn_reset:'RESET CATALOG',
+    btn_select_all:'SELECT ALL VISIBLE',btn_deselect_all:'DESELECT ALL VISIBLE',btn_invert:'INVERT VISIBLE',
+    btn_start:'START SORT',
+    hint_min:'SELECT AT LEAST 2 SONGS',
+    hint_estimate:(n,c,mode,k)=>mode==='full'?`FULL RANKING · ${n} SONGS · ~${c} COMPARISONS`:`TOP ${Math.min(k,n)} · OF ${n} SONGS · ~${c} COMPARISONS`,
+    cat_all:'ALL',cat_實體單曲:'PHYSICAL SINGLE',cat_數位單曲:'DIGITAL SINGLE',cat_專輯:'ALBUM',cat_迷你專輯:'MINI ALBUM',cat_BD單曲:'BD SINGLE',cat_參與作品:'FEATURED WORK',
+    era_all:'ALL',era_custom:'CUSTOM YEARS',era_apply:'APPLY',
+    mode_title:'SORT MODE',mode_accent:'CHOOSE HOW MANY TO RANK',
+    mode_full:n=>`FULL RANKING (${n})`,mode_top:n=>`TOP ${n}`,mode_custom:'CUSTOM',mode_custom_n:'TOP N:',
+    mode_hint_full:'Rank all selected songs in full order (most comparisons)',
+    mode_hint_top:n=>`Find only the top ${n} songs (much fewer comparisons, fast)`,
+    compare_which:'WHICH DO YOU',compare_prefer:'PREFER?',compare_sub:'CHOOSE ONE OR TIE',
+    progress_label:'COMPARISONS',mini_rank:n=>`#${n} FOUND`,
+    listen:'LISTEN ON YOUTUBE',choose:'CHOOSE',
+    btn_tie:'⟷ TIE',btn_undo:'↶ UNDO',btn_pause:'⏸ PAUSE & SAVE',btn_cancel:'CANCEL',
+    results_your:'YOUR',results_ranking:'RANKING',results_sub:'COMPILED',
+    results_note_top:(k,n)=>`TOP ${k} · OUT OF ${n} SELECTED`,
+    results_note_full:n=>`FULL RANKING · ${n} SONGS`,
+    btn_copy:'📋 COPY RANKING',btn_again:'↻ SORT AGAIN',btn_back:'← BACK TO CATALOG',
+    modal_add:'ADD SONG',modal_edit:'EDIT SONG',
+    form_title:'SONG TITLE',form_album:'ALBUM / SINGLE',form_youtube:'YOUTUBE URL',form_yt_hint:'Leave blank to auto-generate a search link',
+    form_image:'ALBUM IMAGE URL',form_img_hint:'Leave blank to use YouTube thumbnail automatically',
+    modal_import:'IMPORT SONGS',form_json:'JSON DATA',form_import_hint:'Paste previously exported JSON data',
+    btn_cancel_m:'CANCEL',btn_save:'SAVE',btn_import_do:'IMPORT',
+    footer_credit:'A SONG SORTER FOR',contact_label:'CONTACT AUTHOR',author_name:'Taiwan 8号車 Ruby',
+    resume_h3:'▶ SORT IN PROGRESS',resume_p:(d,t,p,m)=>`${m} · ${d} / ${t} COMPARISONS · ${p}% COMPLETE`,
+    btn_resume:'RESUME →',btn_discard:'DISCARD',
+    badge_full:'FULL RANKING',badge_top:k=>`TOP ${k} MODE`,
+    msg_saved:'Progress saved',msg_added:'Song added',msg_updated:'Song updated',msg_cleared:'Cleared',
+    msg_required:'Song title is required',msg_copied:'Copied to clipboard',
+    msg_imported:n=>`Imported ${n} songs`,msg_invalid:'Invalid JSON',msg_nothing:'Nothing to export',
+    msg_reset:'Catalog reset',msg_discard:'Progress discarded',msg_year_invalid:'Please enter valid years',
+    confirm_delete:t=>`Delete "${t}"?`,confirm_reset:'Reset to the full 171-song catalog? Your custom changes will be lost.',
+    confirm_cancel:'Cancel and discard current progress?',confirm_replace:(n,m)=>`Replace your current ${n} songs with ${m} imported songs?`,
+    confirm_again:'Sort again with the same selection?',confirm_discard:'Discard saved sort progress?',
+    rank_header_top:k=>`🚄 超特急 SONG SORTER · MY TOP ${k}`,
+    rank_header_full:'🚄 超特急 SONG SORTER · MY FULL RANKING',
+  },
+  ja: {
+    brand_sub:'超特急 ソング ソーター',brand_car:'CAR.NO 08 — ファン版',
+    m_left:'← 左',m_tie:'引分',m_right:'右 →',
+    layout_label:'表示モード',layout_auto:'💻 PC・タブレット',layout_mobile:'📱 スマホ',
+    confirm_title:'確認',confirm_yes:'OK',confirm_no:'キャンセル',confirm_missing:'保存された一部の曲が見つかりません。続けますか？',
+    era_custom_btn:'📅 カスタム',era_apply:'適用',modal_custom_year:'カスタム年代範囲',
+    form_year_from:'開始年',form_year_to:'終了年',form_year_hint:'どちらも空欄可',
+    form_year_presets:'プリセット',preset_clear:'クリア',btn_apply:'適用',
+    status_ready:'準備完了',status_sorting:'ソート中',status_complete:'完了',
+    hero_song:'SONG',hero_sorter:'SORTER',hero_sub:'超特急のお気に入り楽曲をランキング',hero_tag:'8号車専用 · POWERED BY 推し',
+    tip:'<strong>遊び方</strong>　171曲プリロード済み。<strong>カテゴリーや年代をタップ</strong>するとフィルター＋その範囲を自動選択。下の<strong>ソートモード</strong>で完全ランキングか上位N位かを選べます（後者は比較回数が大幅減）。進行状況は自動保存。',
+    toolbar_title:'楽曲カタログ',toolbar_selected:'選択中',
+    filter_cat:'カテゴリー',filter_era:'年代',
+    btn_export:'エクスポート',btn_import:'インポート',btn_reset:'カタログをリセット',
+    btn_select_all:'表示中すべて選択',btn_deselect_all:'表示中すべて解除',btn_invert:'表示中を反転',
+    btn_start:'ソート開始',
+    hint_min:'2曲以上選んでください',
+    hint_estimate:(n,c,mode,k)=>mode==='full'?`完全ランキング · ${n}曲 · 約 ${c} 回比較`:`トップ${Math.min(k,n)} · ${n}曲中 · 約 ${c} 回比較`,
+    cat_all:'すべて',cat_實體單曲:'シングル',cat_數位單曲:'配信シングル',cat_專輯:'アルバム',cat_迷你專輯:'ミニアルバム',cat_BD單曲:'BDシングル',cat_參與作品:'参加作品',
+    era_all:'すべて',era_custom:'カスタム年代',era_apply:'適用',
+    mode_title:'ソートモード',mode_accent:'何位までランクするか',
+    mode_full:n=>`完全ランキング (${n})`,mode_top:n=>`トップ ${n}`,mode_custom:'カスタム',mode_custom_n:'トップ N：',
+    mode_hint_full:'選択した全曲を完全に順位付け（比較回数最多）',
+    mode_hint_top:n=>`上位${n}位のみ決定（比較回数が大幅に少なく高速）`,
+    compare_which:'どちらが',compare_prefer:'好き？',compare_sub:'1つ選ぶ、または引き分け',
+    progress_label:'回比較',mini_rank:n=>`第${n}位確定`,
+    listen:'YouTubeで聴く',choose:'選ぶ',
+    btn_tie:'⟷ 引き分け',btn_undo:'↶ 戻る',btn_pause:'⏸ 一時停止',btn_cancel:'キャンセル',
+    results_your:'あなたの',results_ranking:'ランキング',results_sub:'集計',
+    results_note_top:(k,n)=>`トップ ${k} · ${n}曲中`,
+    results_note_full:n=>`完全ランキング · ${n}曲`,
+    btn_copy:'📋 ランキングをコピー',btn_again:'↻ もう一度',btn_back:'← カタログに戻る',
+    modal_add:'楽曲追加',modal_edit:'楽曲編集',
+    form_title:'曲名',form_album:'収録アルバム／シングル',form_youtube:'YouTube URL',form_yt_hint:'空欄なら検索リンクを自動生成',
+    form_image:'アルバム画像URL',form_img_hint:'空欄ならYouTubeサムネを自動使用',
+    modal_import:'楽曲インポート',form_json:'JSONデータ',form_import_hint:'以前エクスポートしたJSONデータを貼り付け',
+    btn_cancel_m:'キャンセル',btn_save:'保存',btn_import_do:'インポート',
+    footer_credit:'A SONG SORTER FOR',contact_label:'作者に連絡',author_name:'台湾8号車・露比',
+    resume_h3:'▶ ソート進行中',resume_p:(d,t,p,m)=>`${m} · ${d} / ${t} 回比較 · ${p}% 完了`,
+    btn_resume:'再開 →',btn_discard:'破棄',
+    badge_full:'完全ランキング',badge_top:k=>`トップ${k}モード`,
+    msg_saved:'進行状況を保存しました',msg_added:'追加しました',msg_updated:'更新しました',msg_cleared:'クリアしました',
+    msg_required:'曲名は必須です',msg_copied:'クリップボードにコピーしました',
+    msg_imported:n=>`${n}曲インポートしました`,msg_invalid:'無効なJSON',msg_nothing:'データがありません',
+    msg_reset:'カタログをリセットしました',msg_discard:'進行状況を破棄しました',msg_year_invalid:'有効な年を入力してください',
+    confirm_delete:t=>`「${t}」を削除しますか？`,confirm_reset:'171曲の完全カタログにリセットしますか？カスタム変更は失われます。',
+    confirm_cancel:'キャンセルして現在の進行状況を破棄しますか？',confirm_replace:(n,m)=>`現在の${n}曲を${m}曲のインポートデータで置き換えますか？`,
+    confirm_again:'同じ選択で再ソート？',confirm_discard:'保存された進行状況を破棄？',
+    rank_header_top:k=>`🚄 超特急 SONG SORTER · 私のトップ${k}`,
+    rank_header_full:'🚄 超特急 SONG SORTER · 私の完全ランキング',
+  }
+};
+
+let currentLang = 'zh';
+let layoutMode = 'auto'; // 'auto' | 'desktop' | 'mobile'
+
+// ============ TAP vs SCROLL DETECTION ============
+// On touch devices, a click can fire after a scroll if the finger barely moved.
+// We track touchmove distance and suppress card-toggles when the user was scrolling.
+let _touchStartXY = null;
+let _touchMoved = false;
+document.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    _touchStartXY = [e.touches[0].clientX, e.touches[0].clientY];
+    _touchMoved = false;
+  } else {
+    _touchMoved = true; // multi-touch (e.g. pinch) — ignore
+  }
+}, { passive: true });
+document.addEventListener('touchmove', e => {
+  if (!_touchStartXY || _touchMoved) return;
+  const t = e.touches[0];
+  const dx = t.clientX - _touchStartXY[0];
+  const dy = t.clientY - _touchStartXY[1];
+  if (Math.hypot(dx, dy) > 10) _touchMoved = true;
+}, { passive: true });
+function isTouchScroll() {
+  // Called by click handlers. Returns true if the user was scrolling.
+  // _touchMoved persists between events but is reset on each touchstart.
+  return _touchMoved;
+}
+const t = (k, ...args) => {
+  const v = TR[currentLang][k];
+  if (typeof v === 'function') return v(...args);
+  return v !== undefined ? v : k;
+};
+
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = TR[currentLang][key];
+    if (val !== undefined && typeof val !== 'function') {
+      if (el.tagName === 'INPUT' && el.placeholder !== undefined && !el.value) el.placeholder = val;
+      else el.textContent = val;
+    }
+  });
+  // Mobile action button labels via data-i18n-suffix
+  document.querySelectorAll('[data-i18n-suffix]').forEach(el => {
+    const key = el.getAttribute('data-i18n-suffix');
+    const val = TR[currentLang][key];
+    if (val !== undefined) el.textContent = val;
+  });
+  document.getElementById('tipBox').innerHTML = t('tip');
+  document.querySelectorAll('.lang-toggle button').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === currentLang);
+  });
+  renderSongList();
+  renderFilters();
+  renderModeChips();
+  updateStartButton();
+  renderResumeBanner();
+}
+
+// ============ LAYOUT MODE (desktop / mobile / auto) ============
+// 'auto'    → follow viewport width (<=720px = mobile)
+// 'desktop' → force the wide layout regardless of screen
+// 'mobile'  → force the compact side-by-side layout regardless of screen
+function computeIsMobile(){
+  // Two explicit modes the user picks themselves:
+  //   'mobile' → always the compact phone layout (side-by-side cards).
+  //   'auto'   → always the desktop/tablet layout, even on a narrow phone screen
+  //              (so users can preview the wide layout on their phone).
+  return layoutMode === 'mobile';
+}
+function applyLayout(){
+  const isMobile = computeIsMobile();
+  document.body.classList.toggle('is-mobile', isMobile);
+  // Update toggle button active states
+  document.querySelectorAll('.layout-toggle button').forEach(b => {
+    b.classList.toggle('active', b.dataset.layout === layoutMode);
+  });
+}
+async function setLayout(mode){
+  layoutMode = mode;
+  await store.set(KEY_LAYOUT, mode);
+  applyLayout();
+  // If a comparison is on-screen, re-render so card contents reflow correctly
+  if(document.getElementById('compareView').classList.contains('active')){
+    renderCompare();
+  }
+}
+
+
+async function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang === 'zh' ? 'zh-TW' : lang;
+  await store.set(KEY_LANG, lang);
+  applyTranslations();
+}
+
+// ============ STORAGE ============
+const hasStorage = typeof window.storage !== 'undefined' && window.storage !== null;
+const store = {
+  async get(key){if(hasStorage){try{const r=await window.storage.get(key);return r?r.value:null;}catch{return null}}return null},
+  async set(key,val){if(hasStorage){try{await window.storage.set(key,val);return true}catch{return false}}return false},
+  async delete(key){if(hasStorage){try{await window.storage.delete(key);return true}catch{return false}}return false}
+};
+const KEY_SONGS = 'bt-sorter:songs:v2';
+const KEY_STATE = 'bt-sorter:sortstate:v3';
+const KEY_LANG = 'bt-sorter:lang';
+const KEY_SEED = 'bt-sorter:seeded:v2';
+const KEY_PREFS = 'bt-sorter:prefs:v1';
+const KEY_LAYOUT = 'bt-sorter:layout';
+
+// ============ STATE ============
+let songs = [];
+let editingId = null;
+let sorter = null;
+let history = [];
+let activeCategory = 'all';
+let activeEras = new Set(); // multi-select; empty = no era filter (treated as ALL)
+let customYearMin = null;
+let customYearMax = null;
+let sortMode = 'full'; // 'full' | 'topN'
+let topNValue = 10;
+
+// ============ HELPERS ============
+function uid(){return Math.random().toString(36).slice(2,9)}
+function toast(msg,ms=2400){const tt=document.getElementById('toast');tt.textContent=msg;tt.classList.add('show');setTimeout(()=>tt.classList.remove('show'),ms)}
+// Custom confirm — returns a Promise<boolean>. Works inside in-app browsers where
+// the native window.confirm() is silently blocked or ignored.
+function confirmDialog(message, opts){
+  opts = opts || {};
+  return new Promise(resolve => {
+    const modal = document.getElementById('confirmModal');
+    const msgEl = document.getElementById('confirmMessage');
+    const titleEl = document.getElementById('confirmTitle');
+    const yesBtn = document.getElementById('confirmYesBtn');
+    const noBtn = document.getElementById('confirmNoBtn');
+    msgEl.textContent = message;
+    titleEl.textContent = opts.title || t('confirm_title');
+    yesBtn.textContent = opts.yes || t('confirm_yes');
+    noBtn.textContent = opts.no || t('confirm_no');
+    // Danger styling for destructive actions
+    yesBtn.className = opts.danger ? 'btn btn-danger' : 'btn btn-primary';
+    modal.classList.add('active');
+    function cleanup(result){
+      modal.classList.remove('active');
+      yesBtn.removeEventListener('click', onYes);
+      noBtn.removeEventListener('click', onNo);
+      modal.removeEventListener('click', onBackdrop);
+      resolve(result);
+    }
+    function onYes(){ cleanup(true); }
+    function onNo(){ cleanup(false); }
+    function onBackdrop(e){ if(e.target === modal) cleanup(false); }
+    yesBtn.addEventListener('click', onYes);
+    noBtn.addEventListener('click', onNo);
+    modal.addEventListener('click', onBackdrop);
+  });
+}
+function extractYouTubeId(url){if(!url)return null;const patterns=[/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,/(?:music\.youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/];for(const p of patterns){const m=url.match(p);if(m)return m[1]}return null}
+function getImageUrl(s){if(s.image)return s.image;const id=extractYouTubeId(s.youtube);if(id)return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;return null}
+function getYouTubeLink(s){if(s.youtube&&s.youtube.startsWith('http'))return s.youtube;const q=encodeURIComponent(`超特急 ${s.title}`);return `https://www.youtube.com/results?search_query=${q}`}
+// Thumbnail HTML: returns an <img> with a chain of YouTube thumbnail fallbacks, ending in a ♪ placeholder.
+// `onerror` cycles through the fallbacks; if all fail, hides the img and the ♪ behind it remains visible.
+function thumbHtml(s){
+  const custom = s.image && s.image.trim();
+  if(custom){
+    return `<span class="ph">♪</span><img src="${escapeHtml(custom)}" alt="" loading="lazy" onerror="this.classList.add('failed');this.onerror=null;">`;
+  }
+  const id = extractYouTubeId(s.youtube);
+  if(!id){
+    return `<span class="ph">♪</span>`;
+  }
+  // Fallback chain via inline onerror: hqdefault → mqdefault → 0.jpg → hide
+  const u1 = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+  const u2 = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
+  const u3 = `https://i.ytimg.com/vi/${id}/0.jpg`;
+  // Use img.youtube.com as an additional alias for u4
+  const u4 = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+  const onerr = `if(this.dataset.step==='1'){this.src='${u2}';this.dataset.step='2';}else if(this.dataset.step==='2'){this.src='${u3}';this.dataset.step='3';}else if(this.dataset.step==='3'){this.src='${u4}';this.dataset.step='4';}else{this.classList.add('failed');this.onerror=null;}`;
+  return `<span class="ph">♪</span><img src="${u1}" data-step="1" alt="" loading="lazy" onerror="${onerr}">`;
+}
+function escapeHtml(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function eraOf(year){if(!year)return 'unknown';const y=parseInt(year);if(y<=2014)return '2012-2014';if(y<=2017)return '2015-2017';if(y<=2020)return '2018-2020';if(y<=2023)return '2021-2023';return '2024+'}
+function getCatLabel(c){return t('cat_'+c)||c}
+
+// ============ PERSISTENCE ============
+async function saveSongs(){await store.set(KEY_SONGS,JSON.stringify(songs))}
+async function loadSongs(){const v=await store.get(KEY_SONGS);if(v){try{songs=JSON.parse(v);return true}catch{}}return false}
+async function savePrefs(){await store.set(KEY_PREFS,JSON.stringify({sortMode,topNValue,activeCategory,activeEras:Array.from(activeEras),customYearMin,customYearMax}))}
+async function loadPrefs(){
+  const v = await store.get(KEY_PREFS);
+  if(!v) return;
+  try{
+    const p = JSON.parse(v);
+    sortMode = p.sortMode || 'full';
+    topNValue = p.topNValue || 10;
+    if(![3,5,10].includes(topNValue)) topNValue = 10;
+    activeCategory = p.activeCategory || 'all';
+    // Migrate old single-select activeEra to multi-select activeEras
+    if(Array.isArray(p.activeEras)){
+      activeEras = new Set(p.activeEras);
+    } else if(p.activeEra && p.activeEra !== 'all' && p.activeEra !== 'custom'){
+      activeEras = new Set([p.activeEra]);
+    } else {
+      activeEras = new Set();
+    }
+    customYearMin = p.customYearMin || null;
+    customYearMax = p.customYearMax || null;
+  }catch{}
+}
+async function saveSortState(){if(!sorter)return;await store.set(KEY_STATE,JSON.stringify({algorithm:sorter.algorithm,state:sorter.serialize(),history:history,mode:sortMode,k:topNValue}))}
+async function loadSortState(){const v=await store.get(KEY_STATE);if(!v)return null;try{return JSON.parse(v)}catch{return null}}
+async function clearSortState(){await store.delete(KEY_STATE)}
+
+// ============ SEED ============
+async function seedCatalog(){
+  songs = CATALOG.map(s=>({id:uid(),title:s.title,album:s.album,category:s.category,year:s.year,youtube:s.youtube,image:'',selected:true,custom:false}));
+  await saveSongs();
+  await store.set(KEY_SEED,'1');
+}
+
+// ============ RENDER ============
+function isVisible(s){
+  // Category is single-select.
+  if(activeCategory !== 'all' && s.category !== activeCategory) return false;
+  // Era multi-select + custom range form a UNION.
+  // If no era filter is active, all songs pass.
+  const hasEraSel = activeEras.size > 0;
+  const hasCustom = customYearMin !== null || customYearMax !== null;
+  if(!hasEraSel && !hasCustom) return true;
+  // Match if year falls inside ANY selected era OR custom range.
+  if(hasEraSel && activeEras.has(eraOf(s.year))) return true;
+  if(hasCustom){
+    const y = parseInt(s.year);
+    const okMin = customYearMin === null || y >= customYearMin;
+    const okMax = customYearMax === null || y <= customYearMax;
+    if(okMin && okMax) return true;
+  }
+  return false;
+}
+
+function renderFilters(){
+  const catC = document.getElementById('catFilters');
+  const eraC = document.getElementById('eraFilters');
+
+  // Category (still single-select)
+  const catCounts = {};
+  songs.forEach(s => { catCounts[s.category] = (catCounts[s.category]||0) + 1; });
+  const cats = ['all','實體單曲','數位單曲','專輯','迷你專輯','BD單曲','參與作品'].filter(c => c==='all' || catCounts[c]);
+  catC.innerHTML = cats.map(c => {
+    const label = c==='all' ? t('cat_all') : getCatLabel(c);
+    const count = c==='all' ? songs.length : (catCounts[c]||0);
+    return `<button class="chip ${activeCategory===c?'active':''}" onclick="setCat('${c}')">${escapeHtml(label)}<span class="chip-count">${count}</span></button>`;
+  }).join('');
+
+  // Era (MULTI-SELECT)
+  const eraCounts = {};
+  songs.forEach(s => { const e = eraOf(s.year); eraCounts[e] = (eraCounts[e]||0) + 1; });
+  const eras = ['2012-2014','2015-2017','2018-2020','2021-2023','2024+'].filter(e => eraCounts[e]);
+
+  const noEraFilter = activeEras.size === 0 && customYearMin === null && customYearMax === null;
+  // 'ALL' chip — active when nothing else is selected; clicking it clears everything.
+  let eraHtml = `<button class="chip ${noEraFilter?'active':''}" onclick="clearAllEras()">${escapeHtml(t('era_all'))}<span class="chip-count">${songs.length}</span></button>`;
+  // Individual era chips — multi-select, each one toggles.
+  eraHtml += eras.map(e => {
+    const active = activeEras.has(e);
+    return `<button class="chip ${active?'active':''}" onclick="toggleEra('${e}')">${escapeHtml(e)}<span class="chip-count">${eraCounts[e]||0}</span></button>`;
+  }).join('');
+  // Custom range chip — shows current range or generic label; opens modal.
+  const customActive = customYearMin !== null || customYearMax !== null;
+  const minLabel = customYearMin !== null ? customYearMin : '…';
+  const maxLabel = customYearMax !== null ? customYearMax : '…';
+  const customLabel = customActive ? `📅 ${minLabel}–${maxLabel}` : t('era_custom_btn');
+  eraHtml += `<button class="chip ${customActive?'active':''}" onclick="openCustomYearModal()">${escapeHtml(customLabel)}</button>`;
+  eraC.innerHTML = eraHtml;
+}
+
+function renderModeChips(){
+  const c = document.getElementById('modeChips');
+  const selCount = songs.filter(s=>s.selected).length;
+  const modes = [
+    {key:'top3', label: t('mode_top', 3), active: sortMode==='topN' && topNValue===3},
+    {key:'top5', label: t('mode_top', 5), active: sortMode==='topN' && topNValue===5},
+    {key:'top10', label: t('mode_top', 10), active: sortMode==='topN' && topNValue===10},
+    {key:'full', label: t('mode_full', selCount), active: sortMode==='full'},
+  ];
+  c.innerHTML = modes.map(m=>`<button class="chip mode-chip ${m.active?'active':''}" onclick="setMode('${m.key}')">${escapeHtml(m.label)}</button>`).join('');
+
+  const hintEl = document.getElementById('modeHint');
+  if(sortMode==='full'){
+    hintEl.textContent = t('mode_hint_full');
+  } else {
+    hintEl.textContent = t('mode_hint_top', topNValue);
+  }
+}
+
+function setMode(key){
+  if(key==='full'){sortMode='full'}
+  else if(key.startsWith('top')){
+    sortMode='topN';
+    topNValue = parseInt(key.slice(3));
+  }
+  savePrefs();
+  // Toggle .active classes in place rather than re-rendering — avoids layout shifts.
+  document.querySelectorAll('.mode-chip').forEach(b => {
+    b.classList.remove('active');
+  });
+  const allChips = document.querySelectorAll('.mode-chip');
+  // Order is: top3, top5, top10, full (matches the array in renderModeChips)
+  const keyMap = {top3:0, top5:1, top10:2, full:3};
+  const idx = keyMap[key];
+  if(idx !== undefined && allChips[idx]) allChips[idx].classList.add('active');
+  // Update hint and start button without re-rendering chips
+  const hintEl = document.getElementById('modeHint');
+  if(hintEl) hintEl.textContent = sortMode==='full' ? t('mode_hint_full') : t('mode_hint_top', topNValue);
+  updateStartButton();
+}
+
+function refreshAfterFilter(){
+  applyFiltersToSelection();
+  savePrefs();
+  renderFilters();
+  renderSongList();
+  renderModeChips();
+}
+function setCat(c){
+  activeCategory = c;
+  refreshAfterFilter();
+}
+function toggleEra(key){
+  if(activeEras.has(key)) activeEras.delete(key);
+  else activeEras.add(key);
+  refreshAfterFilter();
+}
+function clearAllEras(){
+  // 'ALL' button — clears both multi-select eras AND custom range.
+  activeEras.clear();
+  customYearMin = null;
+  customYearMax = null;
+  refreshAfterFilter();
+}
+function openCustomYearModal(){
+  document.getElementById('customYearMinInput').value = customYearMin !== null ? customYearMin : '';
+  document.getElementById('customYearMaxInput').value = customYearMax !== null ? customYearMax : '';
+  document.getElementById('customYearModal').classList.add('active');
+}
+function setCustomYearPreset(min, max){
+  document.getElementById('customYearMinInput').value = min !== null ? min : '';
+  document.getElementById('customYearMaxInput').value = max !== null ? max : '';
+}
+function applyCustomYearModal(){
+  const minRaw = document.getElementById('customYearMinInput').value.trim();
+  const maxRaw = document.getElementById('customYearMaxInput').value.trim();
+  const minV = minRaw === '' ? NaN : parseInt(minRaw);
+  const maxV = maxRaw === '' ? NaN : parseInt(maxRaw);
+  customYearMin = isNaN(minV) ? null : minV;
+  customYearMax = isNaN(maxV) ? null : maxV;
+  if(customYearMin !== null && customYearMax !== null && customYearMin > customYearMax){
+    [customYearMin, customYearMax] = [customYearMax, customYearMin];
+  }
+  document.getElementById('customYearModal').classList.remove('active');
+  refreshAfterFilter();
+}
+function clearCustomYearModal(){
+  customYearMin = null;
+  customYearMax = null;
+  document.getElementById('customYearModal').classList.remove('active');
+  refreshAfterFilter();
+}
+
+function applyFiltersToSelection(){
+  songs.forEach(s=>{s.selected = isVisible(s)});
+  saveSongs();
+}
+
+function renderSongList(){
+  const list = document.getElementById('songList');
+  list.innerHTML = '';
+  songs.forEach((s)=>{
+    const visible = isVisible(s);
+    const img = getImageUrl(s);
+    const card = document.createElement('div');
+    card.className = 'song-card'+(s.selected?' selected':' deselected')+(visible?'':' hidden');
+    card.dataset.id = s.id;
+    const albumLine = s.album && s.album !== s.title ? `<div class="album-info">${escapeHtml(s.album)}</div>` : '';
+    card.innerHTML = `
+      <div class="check">✓</div>
+      <div class="actions">
+        <button class="icon-btn" onclick="event.stopPropagation();openEdit('${s.id}')" title="Edit">✎</button>
+        ${s.custom ? `<button class="icon-btn" onclick="event.stopPropagation();deleteSong('${s.id}')" title="Delete">×</button>` : ''}
+      </div>
+      <div class="thumb">${thumbHtml(s)}</div>
+      <div class="body">
+        <div class="title">${escapeHtml(s.title)}</div>
+        ${albumLine}
+        <div class="meta">
+          <span class="cat-tag">${escapeHtml(getCatLabel(s.category))}</span>
+          <span class="yr">${escapeHtml(s.year)}</span>
+        </div>
+      </div>
+    `;
+    card.addEventListener('click',()=>{ if(isTouchScroll()) return; toggleSelect(s.id); });
+    list.appendChild(card);
+  });
+
+  const addCard = document.createElement('div');
+  addCard.className = 'song-card add-card';
+  addCard.innerHTML = `<div class="plus">+</div><div class="label">${escapeHtml(TR[currentLang].modal_add)}</div>`;
+  addCard.addEventListener('click',openAdd);
+  list.appendChild(addCard);
+
+  updateStartButton();
+}
+
+function estimateComparisons(n, mode, k){
+  if(n < 2) return 0;
+  if(mode === 'full'){
+    return Math.ceil(n * Math.log2(n));
+  } else {
+    const kk = Math.min(k, n);
+    const logN = Math.ceil(Math.log2(Math.max(2, n)));
+    return (n - 1) + Math.max(0, kk - 1) * logN;
+  }
+}
+
+function updateStartButton(){
+  const selCount = songs.filter(s=>s.selected).length;
+  document.getElementById('selCount').textContent = selCount;
+  document.getElementById('totalCount').textContent = songs.length;
+
+  // Update the FULL chip label (it's the last mode-chip) so the count stays in sync.
+  const modeChips = document.querySelectorAll('.mode-chip');
+  if(modeChips.length >= 4) modeChips[3].textContent = t('mode_full', selCount);
+
+  const startBtn = document.getElementById('startBtn');
+  const startHint = document.getElementById('startHint');
+  if(selCount < 2){
+    startBtn.disabled = true;
+    startHint.textContent = t('hint_min');
+  } else {
+    startBtn.disabled = false;
+    const c = estimateComparisons(selCount, sortMode, topNValue);
+    startHint.textContent = t('hint_estimate', selCount, c, sortMode, topNValue);
+  }
+}
+
+async function toggleSelect(id){
+  const s = songs.find(x=>x.id===id);
+  if(!s)return;
+  s.selected = !s.selected;
+  await saveSongs();
+  const card = document.querySelector(`.song-card[data-id="${id}"]`);
+  if(card){card.classList.toggle('selected',s.selected);card.classList.toggle('deselected',!s.selected)}
+  updateStartButton();
+  renderModeChips();
+}
+
+async function selectAll(value){
+  songs.forEach(s=>{if(isVisible(s))s.selected=value});
+  await saveSongs();
+  renderSongList();
+  renderModeChips();
+}
+async function invertSelection(){
+  songs.forEach(s=>{if(isVisible(s))s.selected=!s.selected});
+  await saveSongs();
+  renderSongList();
+  renderModeChips();
+}
+
+function openAdd(){
+  editingId = null;
+  document.getElementById('modalTitle').textContent = t('modal_add');
+  document.getElementById('fTitle').value = '';
+  document.getElementById('fAlbum').value = '';
+  document.getElementById('fYoutube').value = '';
+  document.getElementById('fImage').value = '';
+  updatePreview();
+  document.getElementById('songModal').classList.add('active');
+  setTimeout(()=>document.getElementById('fTitle').focus(),50);
+}
+function openEdit(id){
+  const s = songs.find(x=>x.id===id);
+  if(!s)return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = t('modal_edit');
+  document.getElementById('fTitle').value = s.title||'';
+  document.getElementById('fAlbum').value = s.album||'';
+  document.getElementById('fYoutube').value = s.youtube||'';
+  document.getElementById('fImage').value = s.image||'';
+  updatePreview();
+  document.getElementById('songModal').classList.add('active');
+  setTimeout(()=>document.getElementById('fTitle').focus(),50);
+}
+function closeModal(){document.getElementById('songModal').classList.remove('active')}
+function updatePreview(){
+  const img = document.getElementById('fImage').value.trim();
+  const yt = document.getElementById('fYoutube').value.trim();
+  const ytId = extractYouTubeId(yt);
+  const url = img || (ytId ? `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg` : '');
+  const tt = document.getElementById('previewThumb');
+  if(url){tt.style.backgroundImage=`url('${url}')`;tt.textContent=''}
+  else{tt.style.backgroundImage='';tt.style.display='flex';tt.style.alignItems='center';tt.style.justifyContent='center';tt.style.color='#888';tt.style.fontSize='32px';tt.textContent='♪'}
+}
+document.addEventListener('input',(e)=>{if(e.target.id==='fYoutube')updatePreview()});
+
+async function saveSong(){
+  const title = document.getElementById('fTitle').value.trim();
+  const album = document.getElementById('fAlbum').value.trim();
+  const youtube = document.getElementById('fYoutube').value.trim();
+  const image = document.getElementById('fImage').value.trim();
+  if(!title){toast(t('msg_required'));return}
+  if(editingId){
+    const s = songs.find(x=>x.id===editingId);
+    if(s){s.title=title;s.album=album;s.youtube=youtube;s.image=image}
+  } else {
+    songs.push({id:uid(),title,album,category:'數位單曲',year:String(new Date().getFullYear()),youtube,image,selected:true,custom:true});
+  }
+  await saveSongs();
+  renderFilters();
+  renderSongList();
+  closeModal();
+  toast(editingId?t('msg_updated'):t('msg_added'));
+}
+async function deleteSong(id){
+  const s = songs.find(x=>x.id===id);
+  if(!s)return;
+  if(!await confirmDialog(t('confirm_delete',s.title), {danger:true}))return;
+  songs = songs.filter(x=>x.id!==id);
+  await saveSongs();
+  renderFilters();
+  renderSongList();
+}
+async function resetCatalog(){
+  if(!await confirmDialog(t('confirm_reset'), {danger:true}))return;
+  await seedCatalog();
+  activeCategory='all';
+  activeEras = new Set();
+  customYearMin=null;customYearMax=null;
+  await savePrefs();
+  renderFilters();
+  renderSongList();
+  renderModeChips();
+  toast(t('msg_reset'));
+}
+function exportSongs(){
+  if(!songs.length){toast(t('msg_nothing'));return}
+  const data = JSON.stringify(songs,null,2);
+  navigator.clipboard.writeText(data).then(
+    ()=>toast(t('msg_copied')),
+    ()=>{const w=window.open('','_blank');if(w)w.document.body.innerHTML=`<pre style="white-space:pre-wrap;padding:20px;font-family:monospace;">${escapeHtml(data)}</pre>`}
+  );
+}
+function importSongs(){document.getElementById('importData').value='';document.getElementById('importModal').classList.add('active')}
+async function doImport(){
+  const raw = document.getElementById('importData').value.trim();
+  if(!raw){toast(t('msg_nothing'));return}
+  try{
+    const data = JSON.parse(raw);
+    if(!Array.isArray(data))throw new Error('not array');
+    const cleaned = data.filter(d=>d&&d.title).map(d=>({
+      id:d.id||uid(),title:String(d.title),album:String(d.album||''),
+      category:String(d.category||'數位單曲'),year:String(d.year||new Date().getFullYear()),
+      youtube:String(d.youtube||''),image:String(d.image||''),
+      selected:d.selected!==false,custom:d.custom===true
+    }));
+    if(!cleaned.length){toast(t('msg_invalid'));return}
+    if(songs.length && !(await confirmDialog(t('confirm_replace',songs.length,cleaned.length)))){
+      const have = new Set(songs.map(s=>s.title.toLowerCase()));
+      cleaned.forEach(s=>{if(!have.has(s.title.toLowerCase()))songs.push(s)});
+    } else {
+      songs = cleaned;
+    }
+    await saveSongs();
+    renderFilters();renderSongList();
+    document.getElementById('importModal').classList.remove('active');
+    toast(t('msg_imported',cleaned.length));
+  }catch(e){toast(t('msg_invalid'))}
+}
+
+// ============ MERGE SORTER (full ranking) ============
+class MergeSorter {
+  constructor(items, restored = null) {
+    this.algorithm = 'merge';
+    if (restored) {
+      this.items = restored.items;
+      this.groups = restored.groups;
+      this.pending = restored.pending;
+      this.current = restored.current;
+      this.done = restored.done;
+      this.total = restored.total;
+    } else {
+      this.items = items;
+      const shuffled = [...items.map(i=>i.id)].sort(()=>Math.random()-0.5);
+      this.groups = shuffled.map(id=>[id]);
+      this.pending = [];
+      this.current = null;
+      this.done = 0;
+      const n = items.length;
+      this.total = Math.max(1, Math.ceil(n * Math.log2(Math.max(2,n))));
+      this._initRound();
+    }
+  }
+  _initRound() {
+    this.pending = [];
+    for (let i = 0; i < this.groups.length; i += 2) {
+      if (i+1 < this.groups.length) this.pending.push({left:this.groups[i],right:this.groups[i+1],result:[],li:0,ri:0});
+      else this.pending.push({left:this.groups[i],right:null,result:this.groups[i],li:0,ri:0});
+    }
+    this.groups = [];
+    this._advance();
+  }
+  _advance() {
+    while (true) {
+      if (this.current === null) {
+        if (this.pending.length === 0) {
+          if (this.groups.length <= 1) return;
+          this._initRound();
+          return;
+        }
+        this.current = this.pending.shift();
+        if (this.current.right === null) { this.groups.push(this.current.left); this.current = null; continue; }
+      }
+      const m = this.current;
+      if (m.li >= m.left.length) { m.result.push(...m.right.slice(m.ri)); this.groups.push(m.result); this.current = null; continue; }
+      if (m.ri >= m.right.length) { m.result.push(...m.left.slice(m.li)); this.groups.push(m.result); this.current = null; continue; }
+      return;
+    }
+  }
+  isDone() { return this.current===null && this.pending.length===0 && this.groups.length===1 }
+  getComparison() { if(this.isDone()||!this.current)return null; return {leftId:this.current.left[this.current.li],rightId:this.current.right[this.current.ri]} }
+  choose(side) {
+    if (!this.current) return;
+    const m = this.current;
+    if (side==='left'){m.result.push(m.left[m.li]);m.li++}
+    else if (side==='right'){m.result.push(m.right[m.ri]);m.ri++}
+    else if (side==='tie'){m.result.push(m.left[m.li]);m.li++}
+    this.done++;
+    this._advance();
+  }
+  getProgress() { return Math.min(100, Math.round((this.done/this.total)*100)) }
+  getResults() { return this.isDone() ? this.groups[0] : null }
+  getRankedSoFar() { return null } // merge sort doesn't know partial rankings
+  snapshot() { return {groups:JSON.parse(JSON.stringify(this.groups)),pending:JSON.parse(JSON.stringify(this.pending)),current:JSON.parse(JSON.stringify(this.current)),done:this.done} }
+  restore(s) { this.groups=s.groups; this.pending=s.pending; this.current=s.current; this.done=s.done }
+  serialize() { return {items:this.items,groups:this.groups,pending:this.pending,current:this.current,done:this.done,total:this.total} }
+}
+
+// ============ TOURNAMENT SORTER (top-K, fewer comparisons) ============
+// Correctness: builds a tournament tree. After each winner is extracted, walks up the
+// winner's path and clears each ancestor's cached winner, then re-resolves. At each
+// node, if BOTH children have non-null songIds, a new comparison is needed (queued).
+// If one child is exhausted, the other propagates up freely.
+class TournamentSorter {
+  constructor(items, k, restored = null) {
+    this.algorithm = 'tournament';
+    if (restored) {
+      this.items = restored.items;
+      this.nodes = restored.nodes;
+      this.pendingQueue = restored.pendingQueue;
+      this.currentIdx = restored.currentIdx;
+      this.rootIdx = restored.rootIdx;
+      this.leafByItem = restored.leafByItem;
+      this.results = restored.results;
+      this.done = restored.done;
+      this.total = restored.total;
+      this.k = restored.k;
+      this.n = restored.n;
+    } else {
+      this.items = items;
+      this.k = Math.min(k, items.length);
+      this.n = items.length;
+      this.results = [];
+      this.done = 0;
+      const ids = items.map(i=>i.id);
+      // shuffle for fairness
+      for(let i=ids.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]]}
+      this.nodes = [];
+      this.leafByItem = {};
+      // Leaves: each holds one song, never exhausted until that song is extracted.
+      let currentLevel = ids.map(id=>{
+        const idx = this.nodes.length;
+        this.nodes.push({songId:id, leftIdx:-1, rightIdx:-1, parentIdx:-1, exhausted:false});
+        this.leafByItem[id] = idx;
+        return idx;
+      });
+      // Build internal nodes bottom-up.
+      while(currentLevel.length>1){
+        const nextLevel=[];
+        for(let i=0;i<currentLevel.length;i+=2){
+          if(i+1<currentLevel.length){
+            const idx=this.nodes.length;
+            const leftIdx=currentLevel[i], rightIdx=currentLevel[i+1];
+            this.nodes.push({songId:null, leftIdx, rightIdx, parentIdx:-1, exhausted:false});
+            this.nodes[leftIdx].parentIdx=idx;
+            this.nodes[rightIdx].parentIdx=idx;
+            nextLevel.push(idx);
+          } else {
+            // odd one out: bye to next round
+            nextLevel.push(currentLevel[i]);
+          }
+        }
+        currentLevel = nextLevel;
+      }
+      this.rootIdx = currentLevel[0];
+      // Estimated comparisons: (n-1) for initial tournament + (k-1) * ceil(log2 n) for subsequent extractions
+      const logN = Math.ceil(Math.log2(Math.max(2,this.n)));
+      this.total = Math.max(1, (this.n - 1) + Math.max(0, this.k - 1) * logN);
+      this.pendingQueue = [];
+      this.currentIdx = null;
+      // Resolve initial bracket: for every internal node (created bottom-up, so iterating
+      // node index order works), queue it for comparison.
+      for(let i=0;i<this.nodes.length;i++){
+        if(this.nodes[i].leftIdx!==-1) this._tryResolve(i);
+      }
+      this._advance();
+    }
+  }
+  
+  // _tryResolve(idx): given an internal node whose songId is null (or has just had a winner
+  // extracted), determine its new songId. Propagate up only when this node is fully resolved.
+  _tryResolve(idx){
+    const node = this.nodes[idx];
+    if(node.leftIdx===-1) return; // leaf — no resolution needed
+    const left = this.nodes[node.leftIdx];
+    const right = this.nodes[node.rightIdx];
+    
+    // Determine each child's status: exhausted, has-value, or needs-resolution
+    const leftReady = left.exhausted || left.songId !== null;
+    const rightReady = right.exhausted || right.songId !== null;
+    
+    if(!leftReady || !rightReady){
+      // Wait for child resolution before queueing this one
+      return;
+    }
+    
+    // Both children resolved
+    if(left.exhausted && right.exhausted){
+      node.exhausted = true;
+      node.songId = null;
+      if(node.parentIdx!==-1) this._tryResolve(node.parentIdx);
+    } else if(left.exhausted){
+      node.songId = right.songId;
+      if(node.parentIdx!==-1){
+        // Parent's cached winner (if any) might come from this subtree; let parent handle.
+        // We don't propagate unless parent's songId is null.
+        const parent = this.nodes[node.parentIdx];
+        if(parent.songId === null) this._tryResolve(node.parentIdx);
+      }
+    } else if(right.exhausted){
+      node.songId = left.songId;
+      if(node.parentIdx!==-1){
+        const parent = this.nodes[node.parentIdx];
+        if(parent.songId === null) this._tryResolve(node.parentIdx);
+      }
+    } else {
+      // Both children have real songs — need a comparison.
+      if(node.songId === null){
+        if(!this.pendingQueue.includes(idx)) this.pendingQueue.push(idx);
+      }
+    }
+  }
+  
+  // _extract(): take the root's winner into results and re-bubble.
+  _extract(){
+    const root = this.nodes[this.rootIdx];
+    if(root.exhausted || root.songId === null) return false;
+    const winner = root.songId;
+    this.results.push(winner);
+    if(this.results.length>=this.k) return true;
+    
+    // Mark the winner's leaf as exhausted, then walk up clearing the cached songId at
+    // each ancestor that held this winner (i.e., the entire path from leaf to root,
+    // since the winner bubbled all the way up). Each cleared ancestor needs re-resolution.
+    const leafIdx = this.leafByItem[winner];
+    this.nodes[leafIdx].exhausted = true;
+    this.nodes[leafIdx].songId = null;
+    
+    // Walk up, clearing each ancestor's cached winner (since the winner was this song).
+    let cur = this.nodes[leafIdx].parentIdx;
+    while(cur !== -1){
+      this.nodes[cur].songId = null;
+      cur = this.nodes[cur].parentIdx;
+    }
+    
+    // Now re-resolve starting from the leaf's parent. The resolution will either:
+    //   (a) propagate up via exhausted sibling, or
+    //   (b) queue a fresh comparison.
+    if(this.nodes[leafIdx].parentIdx !== -1){
+      this._tryResolve(this.nodes[leafIdx].parentIdx);
+    } else {
+      // single-leaf tree, nothing more to do
+      this.nodes[leafIdx].exhausted = true;
+    }
+    return false;
+  }
+  
+  _advance(){
+    // Repeatedly: if root resolved, extract; otherwise pull next comparison from queue.
+    while(true){
+      if(this.results.length>=this.k){ this.currentIdx=null; return; }
+      const root = this.nodes[this.rootIdx];
+      if(root.exhausted){ this.currentIdx=null; return; }
+      if(root.songId !== null){
+        // Have a winner to extract.
+        if(this._extract()){ this.currentIdx=null; return; }
+        continue; // try again after extraction
+      }
+      // Root not yet resolved — need a comparison.
+      if(this.pendingQueue.length === 0){
+        // Nothing queued — but root not resolved. This shouldn't happen if tree is consistent.
+        this.currentIdx = null;
+        return;
+      }
+      // Pull next pending. Skip stale entries (where node was already resolved another way).
+      let next = null;
+      while(this.pendingQueue.length > 0){
+        const idx = this.pendingQueue.shift();
+        const n = this.nodes[idx];
+        if(n.songId !== null || n.exhausted) continue; // stale
+        const left = this.nodes[n.leftIdx];
+        const right = this.nodes[n.rightIdx];
+        if(left.exhausted && right.exhausted){
+          n.exhausted = true;
+          if(n.parentIdx!==-1) this._tryResolve(n.parentIdx);
+          continue;
+        }
+        if(left.exhausted){ n.songId = right.songId; if(n.parentIdx!==-1) this._tryResolve(n.parentIdx); continue; }
+        if(right.exhausted){ n.songId = left.songId; if(n.parentIdx!==-1) this._tryResolve(n.parentIdx); continue; }
+        if(left.songId === null || right.songId === null){
+          // Children not ready — requeue this and try to resolve children
+          this.pendingQueue.push(idx);
+          // To avoid infinite loop, attempt to resolve children
+          if(left.songId === null && !left.exhausted) this._tryResolve(n.leftIdx);
+          if(right.songId === null && !right.exhausted) this._tryResolve(n.rightIdx);
+          continue;
+        }
+        next = idx;
+        break;
+      }
+      if(next === null){
+        // queue drained without finding actionable comparison — bail
+        this.currentIdx = null;
+        return;
+      }
+      this.currentIdx = next;
+      return;
+    }
+  }
+  
+  isDone(){
+    if(this.results.length >= this.k) return true;
+    // Also done if everything is exhausted (in case selected fewer than k somehow)
+    return this.nodes[this.rootIdx].exhausted;
+  }
+  
+  getComparison(){
+    if(this.currentIdx === null) return null;
+    const node = this.nodes[this.currentIdx];
+    const leftSongId = this.nodes[node.leftIdx].songId;
+    const rightSongId = this.nodes[node.rightIdx].songId;
+    if(leftSongId === null || rightSongId === null) return null;
+    return {leftId: leftSongId, rightId: rightSongId};
+  }
+  
+  choose(side){
+    if(this.currentIdx === null) return;
+    const node = this.nodes[this.currentIdx];
+    const leftSongId = this.nodes[node.leftIdx].songId;
+    const rightSongId = this.nodes[node.rightIdx].songId;
+    if(leftSongId === null || rightSongId === null){ this._advance(); return; }
+    const winnerId = side==='left' ? leftSongId : side==='right' ? rightSongId : leftSongId;
+    node.songId = winnerId;
+    this.done++;
+    // Propagate up: parent might now be resolvable.
+    if(node.parentIdx !== -1) this._tryResolve(node.parentIdx);
+    this._advance();
+  }
+  
+  getProgress(){ return Math.min(100, Math.round((this.done/this.total)*100)); }
+  getResults(){ return this.isDone() ? [...this.results] : null; }
+  getRankedSoFar(){ return [...this.results]; }
+  snapshot(){ return {nodes:JSON.parse(JSON.stringify(this.nodes)), pendingQueue:[...this.pendingQueue], currentIdx:this.currentIdx, results:[...this.results], done:this.done}; }
+  restore(s){ this.nodes=s.nodes; this.pendingQueue=s.pendingQueue; this.currentIdx=s.currentIdx; this.results=s.results; this.done=s.done; }
+  serialize(){ return {items:this.items, nodes:this.nodes, pendingQueue:this.pendingQueue, currentIdx:this.currentIdx, rootIdx:this.rootIdx, leafByItem:this.leafByItem, results:this.results, done:this.done, total:this.total, k:this.k, n:this.n}; }
+}
+
+// ============ FLOW ============
+function showView(name){
+  ['setupView','compareView','resultsView'].forEach(id=>{document.getElementById(id).classList.toggle('active',id===name+'View')});
+  window.scrollTo({top:0,behavior:'smooth'});
+  document.getElementById('statusPill').textContent = name==='setup'?t('status_ready'):name==='compare'?t('status_sorting'):t('status_complete');
+}
+
+async function startSort(){
+  const selected = songs.filter(s=>s.selected);
+  if(selected.length < 2) return;
+  if(sortMode==='full' || topNValue >= selected.length){
+    sorter = new MergeSorter(selected);
+  } else {
+    sorter = new TournamentSorter(selected, topNValue);
+  }
+  history = [];
+  await clearSortState();
+  await saveSortState();
+  showView('compare');
+  renderCompare();
+}
+
+async function pauseSort(){
+  await saveSortState();
+  toast(t('msg_saved'));
+  showView('setup');
+  await renderResumeBanner();
+}
+
+async function confirmCancel(){
+  if(!await confirmDialog(t('confirm_cancel'), {danger:true}))return;
+  await clearSortState();
+  sorter = null;
+  history = [];
+  showView('setup');
+  await renderResumeBanner();
+}
+
+function renderCompare(){
+  if(!sorter)return;
+  if(sorter.isDone()){finishSort();return}
+  const cmp = sorter.getComparison();
+  if(!cmp){finishSort();return}
+  const left = songs.find(s=>s.id===cmp.leftId);
+  const right = songs.find(s=>s.id===cmp.rightId);
+  if(!left||!right){toast('Missing song data');confirmCancel();return}
+  setCard('left',left);
+  setCard('right',right);
+  document.getElementById('compareCount').textContent = sorter.done;
+  document.getElementById('compareTotal').textContent = sorter.total;
+  const pct = sorter.getProgress();
+  document.getElementById('comparePct').textContent = pct+'%';
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('undoBtn').disabled = history.length===0;
+  // Mode badge
+  const badge = document.getElementById('modeBadge');
+  if(sorter.algorithm==='tournament'){
+    badge.textContent = t('badge_top', sorter.k);
+    badge.style.display = 'inline-block';
+    // Show partial ranking progress
+    const partial = sorter.getRankedSoFar();
+    const miniRank = document.getElementById('miniRank');
+    if(partial && partial.length > 0){
+      miniRank.textContent = t('mini_rank', partial.length);
+    } else {
+      miniRank.textContent = '';
+    }
+  } else {
+    badge.textContent = t('badge_full');
+    badge.style.display = 'inline-block';
+    document.getElementById('miniRank').textContent = '';
+  }
+}
+
+function setCard(side, song){
+  document.getElementById(side+'Title').textContent = song.title;
+  const albumEl = document.getElementById(side+'Album');
+  if(song.album||song.category){
+    albumEl.innerHTML = `<span class="tag">${escapeHtml(getCatLabel(song.category))} · ${escapeHtml(song.year)}</span> ${escapeHtml(song.album||'')}`;
+  } else {
+    albumEl.innerHTML = '';
+  }
+  const tt = document.getElementById(side+'Thumb');
+  tt.innerHTML = thumbHtml(song);
+  const yt = document.getElementById(side+'Yt');
+  yt.href = getYouTubeLink(song);
+  yt.textContent = t('listen');
+}
+
+function cardChoose(side){
+  // Battle-card click — ignore if the user was scrolling.
+  if(isTouchScroll()) return;
+  choose(side);
+}
+async function choose(side){
+  if(!sorter)return;
+  history.push(sorter.snapshot());
+  if(history.length>50)history.shift();
+  sorter.choose(side);
+  await saveSortState();
+  if(sorter.isDone())finishSort();
+  else renderCompare();
+}
+
+async function undoChoice(){
+  if(!history.length||!sorter)return;
+  const snap = history.pop();
+  sorter.restore(snap);
+  await saveSortState();
+  renderCompare();
+}
+
+async function finishSort(){
+  const ids = sorter.getResults();
+  await clearSortState();
+  renderResults(ids);
+  showView('results');
+}
+
+function renderResults(ids){
+  const list = document.getElementById('resultsList');
+  list.innerHTML = '';
+  const locale = currentLang==='zh'?'zh-TW':currentLang==='ja'?'ja-JP':'en-US';
+  document.getElementById('resultDate').textContent = new Date().toLocaleDateString(locale,{year:'numeric',month:'2-digit',day:'2-digit'});
+  // Note
+  const note = document.getElementById('resultsNote');
+  if(sorter && sorter.algorithm==='tournament'){
+    note.textContent = t('results_note_top', sorter.k, sorter.n);
+  } else {
+    note.textContent = t('results_note_full', ids.length);
+  }
+  ids.forEach((id,idx)=>{
+    const s = songs.find(x=>x.id===id);
+    if(!s)return;
+    const rank = idx+1;
+    const img = getImageUrl(s);
+    const row = document.createElement('div');
+    row.className = 'result-row'+(rank===1?' top-1':rank<=3?' top-3':'');
+    const albumLine = s.album ? `<div class="album-info">${escapeHtml(getCatLabel(s.category))} · ${escapeHtml(s.year)} · ${escapeHtml(s.album)}</div>` : '';
+    row.innerHTML = `
+      <div class="rank"><span class="rank-num">${rank}</span></div>
+      <div class="thumb">${thumbHtml(s)}</div>
+      <div class="info">
+        <div class="title">${escapeHtml(s.title)}</div>
+        ${albumLine}
+        <div class="meta"><a href="${escapeHtml(getYouTubeLink(s))}" target="_blank" rel="noopener">${t('listen')}</a></div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function copyResults(){
+  const ids = sorter ? sorter.getResults() : null;
+  if(!ids)return;
+  const text = ids.map((id,idx)=>{
+    const s = songs.find(x=>x.id===id);
+    if(!s)return '';
+    const info = s.album?` [${s.album}]`:'';
+    return `${String(idx+1).padStart(2,'0')}. ${s.title}${info}${s.youtube?`\n    ${s.youtube}`:''}`;
+  }).filter(Boolean).join('\n');
+  const header = sorter && sorter.algorithm==='tournament' ? t('rank_header_top', sorter.k) : t('rank_header_full');
+  const full = `${header}\n${'─'.repeat(36)}\n` + text;
+  navigator.clipboard.writeText(full).then(()=>toast(t('msg_copied')),()=>toast('Could not copy'));
+}
+
+async function restartSort(){if(!await confirmDialog(t('confirm_again')))return;startSort()}
+function backToSetup(){sorter=null;history=[];showView('setup');renderResumeBanner()}
+
+async function renderResumeBanner(){
+  const area = document.getElementById('resumeArea');
+  const state = await loadSortState();
+  if(state && state.state){
+    const stateInner = state.state;
+    const total = stateInner.total || 1;
+    const done = stateInner.done || 0;
+    const pct = Math.round((done/total)*100);
+    const modeLabel = state.algorithm==='tournament' ? t('badge_top', stateInner.k||state.k) : t('badge_full');
+    area.innerHTML = `
+      <div class="resume-banner">
+        <div class="info">
+          <h3>${t('resume_h3')}</h3>
+          <p>${t('resume_p', done, total, pct, modeLabel)}</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" onclick="resumeSort()">${t('btn_resume')}</button>
+          <button class="btn btn-ghost" onclick="discardSavedSort()">${t('btn_discard')}</button>
+        </div>
+      </div>
+    `;
+  } else {
+    area.innerHTML = '';
+  }
+}
+
+async function resumeSort(){
+  const saved = await loadSortState();
+  if(!saved)return;
+  // Verify songs
+  const missing = saved.state.items.some(it=>!songs.find(s=>s.id===it.id));
+  if(missing){if(!await confirmDialog(t('confirm_missing')))return}
+  if(saved.algorithm==='tournament'){
+    sorter = new TournamentSorter(null, 0, saved.state);
+  } else {
+    sorter = new MergeSorter(null, saved.state);
+  }
+  history = saved.history || [];
+  if(saved.mode) sortMode = saved.mode;
+  if(saved.k) topNValue = saved.k;
+  showView('compare');
+  renderCompare();
+}
+
+async function discardSavedSort(){
+  if(!await confirmDialog(t('confirm_discard'), {danger:true}))return;
+  await clearSortState();
+  await renderResumeBanner();
+  toast(t('msg_discard'));
+}
+
+document.addEventListener('keydown',(e)=>{
+  const compareActive = document.getElementById('compareView').classList.contains('active');
+  const modalActive = document.querySelector('.modal-backdrop.active');
+  if(modalActive){
+    if(e.key==='Escape')document.querySelectorAll('.modal-backdrop.active').forEach(m=>m.classList.remove('active'));
+    if(e.key==='Enter'&&modalActive.id==='songModal'&&document.activeElement&&document.activeElement.tagName==='INPUT'){e.preventDefault();saveSong()}
+    return;
+  }
+  if(!compareActive)return;
+  if(e.key==='ArrowLeft'){e.preventDefault();choose('left')}
+  else if(e.key==='ArrowRight'){e.preventDefault();choose('right')}
+  else if(e.key===' '||e.key==='t'){e.preventDefault();choose('tie')}
+  else if(e.key==='z'&&(e.ctrlKey||e.metaKey)){e.preventDefault();undoChoice()}
+});
+
+async function init(){
+  const savedLang = await store.get(KEY_LANG);
+  currentLang = savedLang || 'zh';
+  document.documentElement.lang = currentLang==='zh'?'zh-TW':currentLang;
+  document.querySelectorAll('.lang-toggle button').forEach(b=>{b.addEventListener('click',()=>setLang(b.dataset.lang))});
+  // Layout mode
+  const savedLayout = await store.get(KEY_LAYOUT);
+  layoutMode = (savedLayout === 'mobile') ? 'mobile' : 'auto';
+  document.querySelectorAll('.layout-toggle button').forEach(b=>{b.addEventListener('click',()=>setLayout(b.dataset.layout))});
+  applyLayout();
+  
+  await loadPrefs();
+  
+  const loaded = await loadSongs();
+  const seeded = await store.get(KEY_SEED);
+  if(!loaded||!seeded){
+    await seedCatalog();
+  } else {
+    // Migrate: add any new catalog songs not yet present
+    const existingIds = new Set(songs.map(s=>extractYouTubeId(s.youtube)).filter(Boolean));
+    let added = 0;
+    CATALOG.forEach(c=>{
+      const cId = extractYouTubeId(c.youtube);
+      if(cId && !existingIds.has(cId)){
+        songs.push({id:uid(),title:c.title,album:c.album,category:c.category,year:c.year,youtube:c.youtube,image:'',selected:true,custom:false});
+        added++;
+      }
+    });
+    if(added>0)await saveSongs();
+  }
+  
+  applyTranslations();
+  await renderResumeBanner();
+}
+
+init();
+</script>
+</body>
+</html>
