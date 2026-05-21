@@ -875,11 +875,51 @@ async function setLang(lang) {
 }
 
 // ============ STORAGE ============
-const hasStorage = typeof window.storage !== 'undefined' && window.storage !== null;
+// Storage layer with a 3-tier fallback so the tool persists data everywhere:
+//   1. window.storage  — Claude artifact preview environment
+//   2. localStorage    — normal browsers (GitHub Pages, any website)
+//   3. in-memory       — last resort (private mode etc.); lasts only this session
+const hasClaudeStorage = typeof window.storage !== 'undefined' && window.storage !== null;
+let hasLocalStorage = false;
+try {
+  const _k = '__bt_test__';
+  window.localStorage.setItem(_k, '1');
+  window.localStorage.removeItem(_k);
+  hasLocalStorage = true;
+} catch(e) {
+  hasLocalStorage = false;
+}
+const _memStore = {}; // in-memory fallback
 const store = {
-  async get(key){if(hasStorage){try{const r=await window.storage.get(key);return r?r.value:null;}catch{return null}}return null},
-  async set(key,val){if(hasStorage){try{await window.storage.set(key,val);return true}catch{return false}}return false},
-  async delete(key){if(hasStorage){try{await window.storage.delete(key);return true}catch{return false}}return false}
+  async get(key){
+    if(hasClaudeStorage){
+      try{ const r = await window.storage.get(key); return r ? r.value : null; }catch{ return null; }
+    }
+    if(hasLocalStorage){
+      try{ return window.localStorage.getItem(key); }catch{ return null; }
+    }
+    return key in _memStore ? _memStore[key] : null;
+  },
+  async set(key,val){
+    if(hasClaudeStorage){
+      try{ await window.storage.set(key,val); return true; }catch{ return false; }
+    }
+    if(hasLocalStorage){
+      try{ window.localStorage.setItem(key,val); return true; }catch{ return false; }
+    }
+    _memStore[key] = val;
+    return true;
+  },
+  async delete(key){
+    if(hasClaudeStorage){
+      try{ await window.storage.delete(key); return true; }catch{ return false; }
+    }
+    if(hasLocalStorage){
+      try{ window.localStorage.removeItem(key); return true; }catch{ return false; }
+    }
+    delete _memStore[key];
+    return true;
+  }
 };
 const KEY_SONGS = 'bt-sorter:songs:v2';
 const KEY_STATE = 'bt-sorter:sortstate:v3';
